@@ -93,11 +93,15 @@ watch(code, (newVal) => {
   }, 300)
 }, { immediate: true })
 
+// Get chart element for export - search more broadly
 const chartElement = computed(() => {
   if (!previewContainerRef.value) return null
-  return previewContainerRef.value.querySelector('.flex.justify-center') as HTMLElement
-    || previewContainerRef.value.querySelector('svg')?.parentElement as HTMLElement
-    || null
+  // Try multiple selectors to find the rendered chart
+  const svgParent = previewContainerRef.value.querySelector('.flex.justify-center')
+    || previewContainerRef.value.querySelector('svg')?.parentElement
+    || previewContainerRef.value.querySelector('[class*="mermaid"]')
+    || previewContainerRef.value.querySelector('.overflow-auto')
+  return svgParent as HTMLElement || null
 })
 
 const handleCodeChange = (newCode: string) => {

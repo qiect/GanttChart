@@ -21,18 +21,19 @@ const emit = defineEmits<{
 
 const editorRef = ref<HTMLDivElement | null>(null)
 let view: EditorView | null = null
+// Flag to skip emitting when the change comes from external value sync
+let isExternalUpdate = false
 
 const createEditor = () => {
   if (!editorRef.value) return
 
-  // Destroy existing editor
   if (view) {
     view.destroy()
     view = null
   }
 
   const updateListener = EditorView.updateListener.of((update) => {
-    if (update.docChanged) {
+    if (update.docChanged && !isExternalUpdate) {
       emit('update:modelValue', update.state.doc.toString())
     }
   })
@@ -79,19 +80,19 @@ onUnmounted(() => {
   }
 })
 
-// Re-create editor on theme change
 watch(() => props.theme, () => {
   createEditor()
 })
 
-// Sync external value changes (e.g., template loading)
 watch(() => props.modelValue, (newVal) => {
   if (!view) return
   const currentValue = view.state.doc.toString()
   if (currentValue !== newVal) {
+    isExternalUpdate = true
     view.dispatch({
       changes: { from: 0, to: currentValue.length, insert: newVal },
     })
+    isExternalUpdate = false
   }
 })
 </script>

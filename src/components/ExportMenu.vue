@@ -1,7 +1,7 @@
 <template>
   <div class="relative" ref="menuRef">
     <button
-      class="px-2 md:px-3 py-1.5 text-sm rounded-md hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors flex items-center gap-1 md:gap-1.5 disabled:opacity-50"
+      class="px-2 md:px-3 py-1.5 text-sm rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors flex items-center gap-1 md:gap-1.5 disabled:opacity-50 cursor-pointer"
       @click="isOpen = !isOpen"
       :disabled="isExporting"
     >
@@ -10,14 +10,14 @@
       </svg>
       <span class="hidden sm:inline">{{ isExporting ? '导出中...' : '导出' }}</span>
     </button>
-    <div v-if="isOpen" class="absolute right-0 top-full mt-1 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg z-50 min-w-[120px] md:min-w-[140px]">
-      <button class="w-full text-left px-3 md:px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors rounded-t-lg" @click="handleExport('png')">
+    <div v-if="isOpen" class="absolute right-0 top-full mt-1 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg z-50 min-w-[120px] md:min-w-[140px] overflow-hidden">
+      <button class="w-full text-left px-3 md:px-4 py-2.5 text-sm hover:bg-blue-50 dark:hover:bg-gray-700 transition-colors cursor-pointer" @click="handleExport('png')">
         导出 PNG
       </button>
-      <button class="w-full text-left px-3 md:px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors" @click="handleExport('svg')">
+      <button class="w-full text-left px-3 md:px-4 py-2.5 text-sm hover:bg-blue-50 dark:hover:bg-gray-700 transition-colors cursor-pointer" @click="handleExport('svg')">
         导出 SVG
       </button>
-      <button class="w-full text-left px-3 md:px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors rounded-b-lg" @click="handleExport('pdf')">
+      <button class="w-full text-left px-3 md:px-4 py-2.5 text-sm hover:bg-blue-50 dark:hover:bg-gray-700 transition-colors cursor-pointer" @click="handleExport('pdf')">
         导出 PDF
       </button>
     </div>

@@ -68,6 +68,7 @@ body {
     height: 4px;
   }
 
+  /* 防止 iOS 输入框缩放 */
   input, select, textarea {
     font-size: 16px !important;
   }
@@ -78,4 +79,13 @@ body {
   .hover-effect:hover {
     opacity: 0.8;
   }
+}
+
+/* CodeMirror 编辑器深色模式适配 */
+.cm-editor {
+  height: 100%;
+}
+
+.cm-editor .cm-scroller {
+  font-family: 'Fira Code', 'Cascadia Code', 'JetBrains Mono', 'Consolas', monospace !important;
 }

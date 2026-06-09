@@ -11,11 +11,7 @@ export function parseMermaidGantt(code: string): GanttSection[] {
   for (const line of lines) {
     const trimmed = line.trim()
 
-    if (trimmed.startsWith('title ')) {
-      continue
-    }
-
-    if (trimmed.startsWith('dateFormat ')) {
+    if (trimmed.startsWith('title ') || trimmed.startsWith('dateFormat ') || trimmed.startsWith('axisFormat ')) {
       continue
     }
 
@@ -25,11 +21,9 @@ export function parseMermaidGantt(code: string): GanttSection[] {
       continue
     }
 
-    if (!trimmed || trimmed.startsWith('%')) continue
+    if (!trimmed || trimmed.startsWith('%') || trimmed === 'gantt') continue
 
     // Parse task line: name :status, id, start, duration
-    // or: name :id, start, duration
-    // or: name :id, after dep, duration
     if (currentSection) {
       const task = parseTaskLine(trimmed)
       if (task) {
@@ -42,7 +36,6 @@ export function parseMermaidGantt(code: string): GanttSection[] {
 }
 
 function parseTaskLine(line: string): GanttTask | null {
-  // Match: taskName :modifiers, id, startRef, duration
   const colonIdx = line.indexOf(':')
   if (colonIdx === -1) return null
 
@@ -106,11 +99,25 @@ export function generateMermaidGantt(
       const statusPrefix = task.status === 'milestone' ? 'milestone, ' :
         task.status ? `${task.status}, ` : ''
 
-      const startRef = task.dependsOn
-        ? `after ${task.dependsOn}`
-        : task.startDate
+      // Determine start reference: dependsOn takes priority over startDate
+      let startRef = ''
+      if (task.dependsOn) {
+        startRef = `after ${task.dependsOn}`
+      } else if (task.startDate) {
+        startRef = task.startDate
+      }
 
-      lines.push(`    ${task.name}           :${statusPrefix}${task.id}, ${startRef}, ${task.duration}`)
+      // Milestone: duration is always 0d
+      const duration = task.status === 'milestone' ? '0d' : task.duration
+
+      // Ensure we always have valid parts
+      if (startRef) {
+        lines.push(`    ${task.name}           :${statusPrefix}${task.id}, ${startRef}, ${duration}`)
+      } else {
+        // No start date or dependency - use today as fallback
+        const today = new Date().toISOString().split('T')[0]
+        lines.push(`    ${task.name}           :${statusPrefix}${task.id}, ${today}, ${duration}`)
+      }
     }
     lines.push('')
   }

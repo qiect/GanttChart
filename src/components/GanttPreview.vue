@@ -11,7 +11,20 @@
       <h3 class="text-red-600 dark:text-red-400 font-semibold text-sm mb-1">语法错误</h3>
       <p class="text-red-500 dark:text-red-300 text-xs font-mono whitespace-pre-wrap break-all">{{ error }}</p>
     </div>
-    <div ref="containerRef" class="flex justify-center overflow-x-auto" v-html="svg"></div>
+    <!-- 缩放控制 -->
+    <div v-if="svg && code.trim()" class="flex items-center justify-end gap-2 mb-3">
+      <button @click="zoomOut" class="p-1 rounded hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors" title="缩小">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4" /></svg>
+      </button>
+      <span class="text-xs text-gray-500 min-w-[3rem] text-center">{{ Math.round(zoom * 100) }}%</span>
+      <button @click="zoomIn" class="p-1 rounded hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors" title="放大">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" /></svg>
+      </button>
+      <button @click="zoomReset" class="p-1 rounded hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors text-xs text-gray-500" title="重置">
+        重置
+      </button>
+    </div>
+    <div ref="containerRef" class="flex justify-center overflow-x-auto" :style="{ transform: `scale(${zoom})`, transformOrigin: 'top center' }" v-html="svg"></div>
   </div>
 </template>
 
@@ -25,15 +38,30 @@ const props = defineProps<{
   theme: 'light' | 'dark'
 }>()
 
+const emit = defineEmits<{
+  errorChange: [hasError: boolean]
+}>()
+
 const svg = ref('')
 const error = ref('')
+const zoom = ref(1)
 
 let renderCounter = 0
 let rendering = false
 
-const render = async () => {
-  if (!props.code.trim() || rendering) return
+const zoomIn = () => { zoom.value = Math.min(3, zoom.value + 0.2) }
+const zoomOut = () => { zoom.value = Math.max(0.3, zoom.value - 0.2) }
+const zoomReset = () => { zoom.value = 1 }
 
+const render = async () => {
+  if (!props.code.trim()) {
+    svg.value = ''
+    error.value = ''
+    emit('errorChange', false)
+    return
+  }
+
+  if (rendering) return
   rendering = true
   const id = `mermaid-gantt-${++renderCounter}`
 
@@ -42,9 +70,11 @@ const render = async () => {
     const result = await mermaid.render(id, props.code)
     svg.value = result.svg
     error.value = ''
+    emit('errorChange', false)
   } catch (err) {
     const errorMessage = err instanceof Error ? err.message : '渲染失败'
     error.value = errorMessage
+    emit('errorChange', true)
     const errorEl = document.getElementById(id)
     if (errorEl) errorEl.remove()
   } finally {
