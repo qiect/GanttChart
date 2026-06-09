@@ -1,5 +1,5 @@
 <template>
-  <div class="h-screen flex flex-col" :class="theme === 'dark' ? 'dark' : ''">
+  <div class="h-screen flex flex-col" :class="theme === 'dark' ? 'dark' : ''" style="height: 100dvh;">
     <Toolbar
       :code="code"
       :theme="theme"
@@ -15,7 +15,7 @@
       <SplitPane :default-ratio="0.4" @ratio-change="handleRatioChange">
         <template #left>
           <div class="h-full flex flex-col" :class="theme === 'dark' ? 'bg-gray-900' : 'bg-white'">
-            <div class="px-3 py-1.5 text-xs font-medium border-b"
+            <div class="px-2 md:px-3 py-1.5 text-xs font-medium border-b"
               :class="theme === 'dark' ? 'text-gray-400 border-gray-700 bg-gray-800/50' : 'text-gray-500 border-gray-200 bg-gray-50'">
               {{ editorMode === 'code' ? 'Mermaid 编辑器' : '可视化编辑器' }}
             </div>
@@ -36,7 +36,7 @@
         <template #right>
           <div ref="previewContainerRef" class="h-full">
             <div class="h-full flex flex-col" :class="theme === 'dark' ? 'bg-gray-900' : 'bg-white'">
-              <div class="px-3 py-1.5 text-xs font-medium border-b"
+              <div class="px-2 md:px-3 py-1.5 text-xs font-medium border-b"
                 :class="theme === 'dark' ? 'text-gray-400 border-gray-700 bg-gray-800/50' : 'text-gray-500 border-gray-200 bg-gray-50'">
                 预览
               </div>
@@ -83,7 +83,6 @@ const isTemplateOpen = ref(false)
 const hasError = ref(false)
 const previewContainerRef = ref<HTMLElement | null>(null)
 
-// Debounce code for preview rendering
 const debounceTimer = ref<ReturnType<typeof setTimeout> | null>(null)
 const debouncedCode = ref(code.value)
 
@@ -94,7 +93,6 @@ watch(code, (newVal) => {
   }, 300)
 }, { immediate: true })
 
-// Get chart element for export
 const chartElement = computed(() => {
   if (!previewContainerRef.value) return null
   return previewContainerRef.value.querySelector('.flex.justify-center') as HTMLElement

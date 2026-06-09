@@ -1,7 +1,7 @@
 <template>
   <div class="h-full flex flex-col" :class="theme === 'dark' ? 'bg-gray-900 text-gray-200' : 'bg-white text-gray-800'">
     <!-- Header -->
-    <div class="px-3 py-1.5 text-xs font-medium border-b flex items-center justify-between"
+    <div class="px-2 md:px-3 py-1.5 text-xs font-medium border-b flex items-center justify-between"
       :class="theme === 'dark' ? 'text-gray-400 border-gray-700 bg-gray-800/50' : 'text-gray-500 border-gray-200 bg-gray-50'">
       <span>可视化编辑器</span>
       <div class="flex gap-1">
@@ -12,14 +12,14 @@
     </div>
 
     <!-- Title & Date Format -->
-    <div class="p-3 border-b space-y-2" :class="theme === 'dark' ? 'border-gray-700' : 'border-gray-200'">
-      <div class="flex gap-2">
+    <div class="p-2 md:p-3 border-b space-y-2" :class="theme === 'dark' ? 'border-gray-700' : 'border-gray-200'">
+      <div class="flex flex-col sm:flex-row gap-2">
         <div class="flex-1">
           <label class="text-xs text-gray-500 block mb-1">项目标题</label>
           <input v-model="title" @input="emitCode" class="w-full px-2 py-1 text-sm border rounded"
             :class="theme === 'dark' ? 'bg-gray-800 border-gray-600' : 'bg-white border-gray-300'" />
         </div>
-        <div class="w-40">
+        <div class="sm:w-40">
           <label class="text-xs text-gray-500 block mb-1">日期格式</label>
           <select v-model="dateFormat" @change="emitCode" class="w-full px-2 py-1 text-sm border rounded"
             :class="theme === 'dark' ? 'bg-gray-800 border-gray-600' : 'bg-white border-gray-300'">
@@ -33,19 +33,19 @@
     </div>
 
     <!-- Sections & Tasks -->
-    <div class="flex-1 overflow-y-auto p-3 space-y-4">
+    <div class="flex-1 overflow-y-auto p-2 md:p-3 space-y-3 md:space-y-4">
       <div v-for="(section, si) in sections" :key="si"
         class="border rounded-lg overflow-hidden" :class="theme === 'dark' ? 'border-gray-700' : 'border-gray-200'">
         <!-- Section Header -->
-        <div class="flex items-center gap-2 px-3 py-2" :class="theme === 'dark' ? 'bg-gray-800' : 'bg-gray-50'">
-          <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div class="flex items-center gap-2 px-2 md:px-3 py-2" :class="theme === 'dark' ? 'bg-gray-800' : 'bg-gray-50'">
+          <svg class="w-4 h-4 text-gray-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
           </svg>
-          <input v-model="section.name" @input="emitCode" class="flex-1 px-2 py-0.5 text-sm font-medium border-none bg-transparent focus:outline-none focus:ring-1 focus:ring-blue-400 rounded" />
-          <button @click="addTask(si)" class="px-2 py-0.5 text-xs rounded bg-blue-500 text-white hover:bg-blue-600">
+          <input v-model="section.name" @input="emitCode" class="flex-1 min-w-0 px-2 py-0.5 text-sm font-medium border-none bg-transparent focus:outline-none focus:ring-1 focus:ring-blue-400 rounded" />
+          <button @click="addTask(si)" class="px-2 py-0.5 text-xs rounded bg-blue-500 text-white hover:bg-blue-600 shrink-0">
             + 任务
           </button>
-          <button @click="removeSection(si)" class="p-1 text-gray-400 hover:text-red-500">
+          <button @click="removeSection(si)" class="p-1 text-gray-400 hover:text-red-500 shrink-0">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
             </svg>
@@ -53,11 +53,12 @@
         </div>
 
         <!-- Tasks -->
-        <div class="p-3 space-y-2">
+        <div class="p-2 md:p-3 space-y-2">
           <div v-for="(task, ti) in section.tasks" :key="ti"
-            class="flex items-start gap-2 p-2 rounded border"
+            class="p-2 md:p-3 rounded border"
             :class="theme === 'dark' ? 'bg-gray-800/50 border-gray-700' : 'bg-white border-gray-100'">
-            <div class="flex-1 grid grid-cols-2 gap-2">
+            <!-- 移动端：单列堆叠；桌面端：双列网格 -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
               <div>
                 <label class="text-xs text-gray-500 block mb-0.5">任务名称</label>
                 <input v-model="task.name" @input="emitCode" class="w-full px-2 py-1 text-sm border rounded"
@@ -77,9 +78,9 @@
                 <label class="text-xs text-gray-500 block mb-0.5">工期</label>
                 <div class="flex gap-1">
                   <input :value="getDurationNum(si, ti)" @input="onDurationNumInput(si, ti, ($event.target as HTMLInputElement).value)" type="number" min="0"
-                    class="w-16 px-2 py-1 text-sm border rounded"
+                    class="w-20 sm:w-16 px-2 py-1 text-sm border rounded"
                     :class="theme === 'dark' ? 'bg-gray-800 border-gray-600' : 'bg-white border-gray-300'" />
-                  <select :value="taskDurationUnits[si] ?? 'd'" @change="onDurationUnitChange(si, ti, ($event.target as HTMLSelectElement).value)" class="px-1 py-1 text-sm border rounded"
+                  <select :value="taskDurationUnits[si] ?? 'd'" @change="onDurationUnitChange(si, ti, ($event.target as HTMLSelectElement).value)" class="flex-1 px-1 py-1 text-sm border rounded"
                     :class="theme === 'dark' ? 'bg-gray-800 border-gray-600' : 'bg-white border-gray-300'">
                     <option value="d">天</option>
                     <option value="h">小时</option>
@@ -98,23 +99,26 @@
                   </option>
                 </select>
               </div>
-              <div>
-                <label class="text-xs text-gray-500 block mb-0.5">状态</label>
-                <select v-model="task.status" @change="emitCode" class="w-full px-2 py-1 text-sm border rounded"
-                  :class="theme === 'dark' ? 'bg-gray-800 border-gray-600' : 'bg-white border-gray-300'">
-                  <option value="">普通</option>
-                  <option value="active">进行中</option>
-                  <option value="done">已完成</option>
-                  <option value="crit">关键</option>
-                  <option value="milestone">里程碑</option>
-                </select>
+              <div class="flex items-end gap-1">
+                <div class="flex-1">
+                  <label class="text-xs text-gray-500 block mb-0.5">状态</label>
+                  <select v-model="task.status" @change="emitCode" class="w-full px-2 py-1 text-sm border rounded"
+                    :class="theme === 'dark' ? 'bg-gray-800 border-gray-600' : 'bg-white border-gray-300'">
+                    <option value="">普通</option>
+                    <option value="active">进行中</option>
+                    <option value="done">已完成</option>
+                    <option value="crit">关键</option>
+                    <option value="milestone">里程碑</option>
+                  </select>
+                </div>
+                <button @click="removeTask(si, ti)" class="p-1.5 text-gray-400 hover:text-red-500 border rounded shrink-0"
+                  :class="theme === 'dark' ? 'border-gray-600' : 'border-gray-300'">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
               </div>
             </div>
-            <button @click="removeTask(si, ti)" class="p-1 text-gray-400 hover:text-red-500 mt-5">
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-              </svg>
-            </button>
           </div>
           <div v-if="section.tasks.length === 0" class="text-center py-4 text-gray-400 text-sm">
             暂无任务，点击上方"+ 任务"添加
@@ -149,12 +153,10 @@ const sections = ref<GanttSection[]>([])
 const taskDurationNums = ref<Record<number, Record<number, number>>>({})
 const taskDurationUnits = ref<Record<number, string>>({})
 
-// Parse incoming code into sections
 const parseCode = () => {
   const parsed = parseMermaidGantt(props.modelValue)
   sections.value = parsed
 
-  // Extract title and dateFormat from code
   const lines = props.modelValue.split('\n')
   for (const line of lines) {
     const trimmed = line.trim()
@@ -166,7 +168,6 @@ const parseCode = () => {
     }
   }
 
-  // Parse duration numbers and units
   taskDurationNums.value = {}
   taskDurationUnits.value = {}
   parsed.forEach((section, si) => {
@@ -184,7 +185,6 @@ const parseCode = () => {
   })
 }
 
-// Generate code from sections and emit
 const emitCode = () => {
   const code = generateMermaidGantt(sections.value, title.value, dateFormat.value)
   emit('update:modelValue', code)
@@ -245,7 +245,6 @@ const addTask = (sectionIndex: number) => {
     status: '',
     dependsOn: '',
   })
-  // Update duration nums
   const ti = sections.value[sectionIndex].tasks.length - 1
   if (!taskDurationNums.value[sectionIndex]) taskDurationNums.value[sectionIndex] = {}
   taskDurationNums.value[sectionIndex][ti] = 7
@@ -258,7 +257,6 @@ const removeTask = (sectionIndex: number, taskIndex: number) => {
   emitCode()
 }
 
-// Watch for external code changes
 watch(() => props.modelValue, () => {
   parseCode()
 }, { immediate: true })

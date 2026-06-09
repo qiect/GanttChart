@@ -13,6 +13,10 @@
   --border-color: #4a4a6a;
 }
 
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+
 body {
   margin: 0;
   padding: 0;
@@ -23,6 +27,7 @@ body {
 #app {
   width: 100vw;
   height: 100vh;
+  height: 100dvh;
 }
 
 .mermaid svg {
@@ -31,8 +36,8 @@ body {
 }
 
 ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  width: 6px;
+  height: 6px;
 }
 
 ::-webkit-scrollbar-track {
@@ -54,4 +59,23 @@ body {
 
 .dark ::-webkit-scrollbar-thumb:hover {
   background: #5a5a7a;
+}
+
+/* 移动端触摸优化 */
+@media (max-width: 767px) {
+  ::-webkit-scrollbar {
+    width: 4px;
+    height: 4px;
+  }
+
+  input, select, textarea {
+    font-size: 16px !important;
+  }
+}
+
+/* 桌面端 hover 效果 */
+@media (hover: hover) {
+  .hover-effect:hover {
+    opacity: 0.8;
+  }
 }

@@ -1,17 +1,17 @@
 <template>
-  <div class="h-full w-full overflow-auto p-6" :class="theme === 'dark' ? 'bg-gray-900' : 'bg-white'">
+  <div class="h-full w-full overflow-auto p-3 md:p-6" :class="theme === 'dark' ? 'bg-gray-900' : 'bg-white'">
     <div v-if="!code.trim()" class="flex items-center justify-center h-full text-gray-400">
-      <div class="text-center">
-        <div class="text-5xl mb-4">📋</div>
-        <p class="text-lg">在左侧编辑器中输入 Mermaid 甘特图语法</p>
-        <p class="text-sm mt-2">或从工具栏选择一个模板开始</p>
+      <div class="text-center px-4">
+        <div class="text-4xl md:text-5xl mb-4">📋</div>
+        <p class="text-base md:text-lg">在编辑器中输入 Mermaid 甘特图语法</p>
+        <p class="text-xs md:text-sm mt-2">或从工具栏选择一个模板开始</p>
       </div>
     </div>
-    <div v-if="error" class="mb-4 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
+    <div v-if="error" class="mb-4 p-3 md:p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
       <h3 class="text-red-600 dark:text-red-400 font-semibold text-sm mb-1">语法错误</h3>
-      <p class="text-red-500 dark:text-red-300 text-xs font-mono whitespace-pre-wrap">{{ error }}</p>
+      <p class="text-red-500 dark:text-red-300 text-xs font-mono whitespace-pre-wrap break-all">{{ error }}</p>
     </div>
-    <div ref="containerRef" class="flex justify-center" v-html="svg"></div>
+    <div ref="containerRef" class="flex justify-center overflow-x-auto" v-html="svg"></div>
   </div>
 </template>
 
