@@ -1,5 +1,11 @@
 <template>
-  <div ref="editorRef" class="h-full w-full" />
+  <div class="h-full w-full flex flex-col" :class="theme === 'dark' ? 'bg-gray-900 text-gray-200' : 'bg-white text-gray-800'">
+    <div class="px-2 md:px-3 py-1.5 text-xs font-medium border-b"
+      :class="theme === 'dark' ? 'text-gray-400 border-gray-700 bg-gray-800/50' : 'text-gray-500 border-gray-200 bg-gray-50'">
+      Mermaid 编辑器
+    </div>
+    <div ref="editorRef" class="flex-1 overflow-hidden" />
+  </div>
 </template>
 
 <script setup lang="ts">
