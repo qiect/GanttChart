@@ -43,7 +43,13 @@
                 甘特图预览
               </div>
               <div class="flex-1 overflow-hidden">
-                <GanttPreview :code="debouncedCode" :theme="theme" @error-change="hasError = $event" />
+                <GanttPreview
+                  :code="debouncedCode"
+                  :theme="theme"
+                  :chart-theme="chartTheme"
+                  @error-change="hasError = $event"
+                  @chart-theme-change="handleChartThemeChange"
+                />
               </div>
             </div>
           </div>
@@ -72,7 +78,7 @@ import StatusBar from './components/StatusBar.vue'
 import TemplateModal from './components/TemplateModal.vue'
 import { useLocalStorage } from './composables/useLocalStorage'
 import { ganttTemplates } from './utils/mermaidTemplates'
-import type { GanttTemplate } from './types'
+import type { GanttTemplate, ChartThemeId } from './types'
 
 const DEFAULT_CODE = ganttTemplates[0].code
 
@@ -80,6 +86,7 @@ const [code, setCode] = useLocalStorage('gantt-studio-code', DEFAULT_CODE)
 const [theme, setTheme] = useLocalStorage<'light' | 'dark'>('gantt-studio-theme', 'light')
 const [, setSplitRatio] = useLocalStorage('gantt-studio-split', 0.4)
 const [editorMode, setEditorMode] = useLocalStorage<'code' | 'visual'>('gantt-studio-editor-mode', 'visual')
+const [chartTheme, setChartTheme] = useLocalStorage<ChartThemeId>('gantt-studio-chart-theme', 'default')
 
 const isTemplateOpen = ref(false)
 const hasError = ref(false)
@@ -120,6 +127,10 @@ const handleRatioChange = (ratio: number) => {
 
 const handleEditorModeChange = (mode: 'code' | 'visual') => {
   setEditorMode(mode)
+}
+
+const handleChartThemeChange = (newChartTheme: ChartThemeId) => {
+  setChartTheme(newChartTheme)
 }
 
 const handleTemplateSelect = (template: GanttTemplate) => {
