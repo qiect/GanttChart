@@ -19,23 +19,37 @@
       <slot name="left" />
     </div>
 
-    <!-- 分割线：桌面端竖向，移动端横向。加宽拖拽区域 -->
+    <!-- 分割线：桌面端竖向，移动端横向 -->
     <div
       v-if="!isMobile"
       class="relative flex-shrink-0 group"
-      style="width: 5px;"
+      style="width: 1px;"
       @mousedown="onMouseDown"
     >
-      <div class="absolute inset-y-0 left-1/2 -translate-x-1/2 w-1 bg-gray-300 dark:bg-gray-600 group-hover:bg-blue-400 dark:group-hover:bg-blue-500 transition-colors cursor-col-resize" />
+      <div class="absolute inset-y-0 left-1/2 -translate-x-1/2 w-px transition-all duration-300"
+        :style="{
+          background: isDragging ? 'var(--accent)' : 'var(--border-primary)',
+          width: isDragging ? '2px' : '1px',
+          boxShadow: isDragging ? '0 0 8px var(--accent-glow)' : 'none',
+        }" />
+      <!-- Invisible wider hit area -->
+      <div class="absolute inset-y-0 -left-2 w-5 cursor-col-resize" />
     </div>
     <div
       v-else
       class="relative flex-shrink-0 group"
-      style="height: 5px;"
+      style="height: 1px;"
       @mousedown="onRowMouseDown"
       @touchstart="onRowTouchStart"
     >
-      <div class="absolute inset-x-0 top-1/2 -translate-y-1/2 h-1 bg-gray-300 dark:bg-gray-600 group-hover:bg-blue-400 dark:group-hover:bg-blue-500 transition-colors cursor-row-resize" />
+      <div class="absolute inset-x-0 top-1/2 -translate-y-1/2 h-px transition-all duration-300"
+        :style="{
+          background: isDragging ? 'var(--accent)' : 'var(--border-primary)',
+          height: isDragging ? '2px' : '1px',
+          boxShadow: isDragging ? '0 0 8px var(--accent-glow)' : 'none',
+        }" />
+      <!-- Invisible wider hit area -->
+      <div class="absolute inset-x-0 -top-2 h-5 cursor-row-resize" />
     </div>
 
     <!-- 右侧/下方面板 -->

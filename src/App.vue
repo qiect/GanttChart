@@ -1,5 +1,5 @@
 <template>
-  <div class="h-screen flex flex-col" :class="theme === 'dark' ? 'dark' : ''" style="height: 100dvh;">
+  <div class="h-screen flex flex-col" :class="theme === 'dark' ? 'dark' : ''" style="height: 100dvh; background: var(--bg-primary);">
     <Toolbar
       :code="code"
       :theme="theme"
@@ -14,9 +14,10 @@
     <div class="flex-1 overflow-hidden">
       <SplitPane :default-ratio="0.4" @ratio-change="handleRatioChange">
         <template #left>
-          <div class="h-full flex flex-col" :class="theme === 'dark' ? 'bg-gray-900' : 'bg-white'">
-            <div class="px-2 md:px-3 py-1.5 text-xs font-medium border-b"
-              :class="theme === 'dark' ? 'text-gray-400 border-gray-700 bg-gray-800/50' : 'text-gray-500 border-gray-200 bg-gray-50'">
+          <div class="h-full flex flex-col" style="background: var(--bg-secondary);">
+            <div class="px-3 md:px-4 py-2 text-xs font-medium border-b flex items-center gap-2"
+              style="border-color: var(--border-primary); color: var(--text-tertiary); background: var(--bg-tertiary);">
+              <span class="w-1.5 h-1.5 rounded-full" :style="{ background: 'var(--accent)' }"></span>
               {{ editorMode === 'code' ? 'Mermaid 编辑器' : '可视化编辑器' }}
             </div>
             <div class="flex-1 overflow-hidden">
@@ -35,9 +36,10 @@
         </template>
         <template #right>
           <div ref="previewContainerRef" class="h-full">
-            <div class="h-full flex flex-col" :class="theme === 'dark' ? 'bg-gray-900' : 'bg-white'">
-              <div class="px-2 md:px-3 py-1.5 text-xs font-medium border-b"
-                :class="theme === 'dark' ? 'text-gray-400 border-gray-700 bg-gray-800/50' : 'text-gray-500 border-gray-200 bg-gray-50'">
+            <div class="h-full flex flex-col" style="background: var(--bg-secondary);">
+              <div class="px-3 md:px-4 py-2 text-xs font-medium border-b flex items-center gap-2"
+                style="border-color: var(--border-primary); color: var(--text-tertiary); background: var(--bg-tertiary);">
+                <span class="w-1.5 h-1.5 rounded-full" :style="{ background: 'var(--success)' }"></span>
                 甘特图预览
               </div>
               <div class="flex-1 overflow-hidden">
@@ -96,7 +98,6 @@ watch(code, (newVal) => {
 // Get chart element for export - search more broadly
 const chartElement = computed(() => {
   if (!previewContainerRef.value) return null
-  // Try multiple selectors to find the rendered chart
   const svgParent = previewContainerRef.value.querySelector('.flex.justify-center')
     || previewContainerRef.value.querySelector('svg')?.parentElement
     || previewContainerRef.value.querySelector('[class*="mermaid"]')
