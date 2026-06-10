@@ -9,6 +9,7 @@
       @theme-change="handleThemeChange"
       @open-template="isTemplateOpen = true"
       @editor-mode-change="handleEditorModeChange"
+      @save="handleSave"
     />
 
     <div class="flex-1 overflow-hidden">
@@ -64,6 +65,8 @@
       @close="isTemplateOpen = false"
       @select="handleTemplateSelect"
     />
+
+    <Toast message="已保存到浏览器缓存" :show="showSaveToast" />
   </div>
 </template>
 
@@ -76,6 +79,7 @@ import GanttPreview from './components/GanttPreview.vue'
 import Toolbar from './components/Toolbar.vue'
 import StatusBar from './components/StatusBar.vue'
 import TemplateModal from './components/TemplateModal.vue'
+import Toast from './components/Toast.vue'
 import { useLocalStorage } from './composables/useLocalStorage'
 import { ganttTemplates } from './utils/mermaidTemplates'
 import type { GanttTemplate, ChartThemeId } from './types'
@@ -90,6 +94,7 @@ const [chartTheme, setChartTheme] = useLocalStorage<ChartThemeId>('gantt-studio-
 
 const isTemplateOpen = ref(false)
 const hasError = ref(false)
+const showSaveToast = ref(false)
 const previewContainerRef = ref<HTMLElement | null>(null)
 
 const debounceTimer = ref<ReturnType<typeof setTimeout> | null>(null)
@@ -131,6 +136,22 @@ const handleEditorModeChange = (mode: 'code' | 'visual') => {
 
 const handleChartThemeChange = (newChartTheme: ChartThemeId) => {
   setChartTheme(newChartTheme)
+}
+
+const handleSave = () => {
+  // 显式写入 localStorage（useLocalStorage 已自动持久化，此处确保覆盖并提示）
+  try {
+    window.localStorage.setItem('gantt-studio-code', JSON.stringify(code.value))
+    window.localStorage.setItem('gantt-studio-theme', JSON.stringify(theme.value))
+    window.localStorage.setItem('gantt-studio-chart-theme', JSON.stringify(chartTheme.value))
+    window.localStorage.setItem('gantt-studio-editor-mode', JSON.stringify(editorMode.value))
+  } catch {
+    // localStorage may be full or unavailable
+  }
+  showSaveToast.value = false
+  requestAnimationFrame(() => {
+    showSaveToast.value = true
+  })
 }
 
 const handleTemplateSelect = (template: GanttTemplate) => {

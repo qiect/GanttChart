@@ -113,7 +113,7 @@
         <button
           class="premium-btn px-3 py-1.5 text-sm rounded-lg flex items-center gap-1.5 cursor-pointer font-medium"
           :style="{ color: 'var(--text-secondary)' }"
-          @click="handleExportCode"
+          @click="handleSave"
           @mouseenter="($event.target as HTMLElement).style.background = 'var(--bg-tertiary)'"
           @mouseleave="($event.target as HTMLElement).style.background = 'transparent'"
         >
@@ -171,7 +171,7 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted } from 'vue'
 import ExportMenu from './ExportMenu.vue'
-import { exportMermaidCode, importMermaidCode } from '../utils/exportChart'
+import { importMermaidCode } from '../utils/exportChart'
 
 const props = defineProps<{
   code: string
@@ -185,6 +185,7 @@ const emit = defineEmits<{
   themeChange: [theme: 'light' | 'dark']
   openTemplate: []
   editorModeChange: [mode: 'code' | 'visual']
+  save: []
 }>()
 
 const isMobile = ref(false)
@@ -211,7 +212,7 @@ const handleImport = async () => {
   }
 }
 
-const handleExportCode = () => {
-  exportMermaidCode(props.code)
+const handleSave = () => {
+  emit('save')
 }
 </script>
