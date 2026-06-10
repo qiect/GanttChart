@@ -1,125 +1,164 @@
 <template>
-  <div class="h-full flex flex-col" :class="theme === 'dark' ? 'bg-gray-900 text-gray-200' : 'bg-white text-gray-800'">
+  <div class="h-full flex flex-col" style="background: var(--bg-secondary); color: var(--text-primary);">
     <!-- Title & Date Format & Add Section -->
-    <div class="p-2 md:p-3 border-b space-y-2" :class="theme === 'dark' ? 'border-gray-700' : 'border-gray-200'">
-      <div class="flex flex-col sm:flex-row gap-2">
+    <div class="p-3 md:p-4 border-b space-y-3" style="border-color: var(--border-primary); background: var(--bg-tertiary);">
+      <div class="flex flex-col sm:flex-row gap-2.5">
         <div class="flex-1">
-          <label class="text-xs text-gray-500 block mb-1">项目标题</label>
-          <input v-model="title" @input="emitCode" class="w-full px-2 py-1.5 text-sm border rounded focus:ring-2 focus:ring-blue-400 focus:border-blue-400 outline-none transition-shadow"
-            :class="theme === 'dark' ? 'bg-gray-800 border-gray-600 text-gray-200' : 'bg-white border-gray-300 text-gray-800'" />
+          <label class="text-[10px] font-semibold block mb-1.5 tracking-widest uppercase" style="color: var(--text-tertiary); letter-spacing: 0.08em;">项目标题</label>
+          <input v-model="title" @input="emitCode" class="premium-input w-full px-3 py-2 text-sm rounded-lg outline-none" />
         </div>
         <div class="sm:w-40">
-          <label class="text-xs text-gray-500 block mb-1">日期格式</label>
-          <select v-model="dateFormat" @change="emitCode" class="w-full px-2 py-1.5 text-sm border rounded focus:ring-2 focus:ring-blue-400 focus:border-blue-400 outline-none transition-shadow cursor-pointer"
-            :class="theme === 'dark' ? 'bg-gray-800 border-gray-600 text-gray-200' : 'bg-white border-gray-300 text-gray-800'">
-            <option value="YYYY-MM-DD">YYYY-MM-DD</option>
-            <option value="YYYY/MM/DD">YYYY/MM/DD</option>
-            <option value="MM/DD/YYYY">MM/DD/YYYY</option>
-            <option value="DD-MM-YYYY">DD-MM-YYYY</option>
-          </select>
+          <label class="text-[10px] font-semibold block mb-1.5 tracking-widest uppercase" style="color: var(--text-tertiary); letter-spacing: 0.08em;">日期格式</label>
+          <CustomSelect
+            v-model="dateFormat"
+            :options="dateFormatOptions"
+            @change="emitCode"
+          />
         </div>
         <div class="sm:w-auto flex items-end">
-          <button @click="addSection" class="px-3 py-1.5 text-sm rounded bg-blue-500 text-white hover:bg-blue-600 cursor-pointer transition-colors whitespace-nowrap">
-            + 分区
+          <button @click="addSection" class="premium-btn px-4 py-2 text-sm rounded-lg cursor-pointer font-medium flex items-center gap-1.5"
+            :style="{
+              background: 'var(--accent)',
+              color: '#ffffff',
+              boxShadow: '0 2px 8px var(--accent-glow)',
+            }"
+            @mouseenter="($event.target as HTMLElement).style.background = 'var(--accent-hover)'; ($event.target as HTMLElement).style.boxShadow = '0 4px 16px var(--accent-glow)'"
+            @mouseleave="($event.target as HTMLElement).style.background = 'var(--accent)'; ($event.target as HTMLElement).style.boxShadow = '0 2px 8px var(--accent-glow)'">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/></svg>
+            分区
           </button>
         </div>
       </div>
     </div>
 
     <!-- Sections & Tasks -->
-    <div class="flex-1 overflow-y-auto p-2 md:p-3 space-y-3 md:space-y-4">
+    <div class="flex-1 overflow-y-auto p-3 md:p-4 space-y-3 md:space-y-4">
       <div v-for="(section, si) in sections" :key="si"
-        class="border rounded-lg overflow-hidden shadow-sm" :class="theme === 'dark' ? 'border-gray-700' : 'border-gray-200'">
+        class="section-card rounded-xl overflow-hidden"
+        :style="{
+          border: '1px solid var(--border-primary)',
+          boxShadow: 'var(--shadow-sm)',
+        }">
         <!-- Section Header -->
-        <div class="flex items-center gap-2 px-2 md:px-3 py-2" :class="theme === 'dark' ? 'bg-gray-800' : 'bg-gray-50'">
-          <svg class="w-4 h-4 text-gray-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+        <div class="section-header flex items-center gap-2 px-3 md:px-4 py-2.5 cursor-pointer select-none"
+          :style="{ background: 'var(--bg-tertiary)' }"
+          @click="toggleSection(si)">
+          <div class="w-1 h-4 rounded-full shrink-0" :style="{ background: 'var(--accent)' }"></div>
+          <input v-model="section.name" @input="emitCode" @click.stop class="flex-1 min-w-0 px-2 py-0.5 text-sm font-semibold bg-transparent focus:outline-none rounded-md"
+            :style="{ color: 'var(--text-primary)' }" />
+          <span class="text-[10px] font-medium px-1.5 py-0.5 rounded-md shrink-0"
+            :style="{ background: 'var(--accent-subtle)', color: 'var(--accent)' }">
+            {{ section.tasks.length }}
+          </span>
+          <svg class="w-4 h-4 shrink-0 transition-transform duration-200"
+            :style="{ transform: collapsedSections.has(si) ? 'rotate(-90deg)' : 'rotate(0)', color: 'var(--text-tertiary)' }"
+            fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
           </svg>
-          <input v-model="section.name" @input="emitCode" class="flex-1 min-w-0 px-2 py-0.5 text-sm font-medium border-none bg-transparent focus:outline-none focus:ring-1 focus:ring-blue-400 rounded" />
-          <button @click="addTask(si)" class="px-2 py-0.5 text-xs rounded bg-blue-500 text-white hover:bg-blue-600 shrink-0 cursor-pointer transition-colors">
-            + 任务
+          <button @click.stop="addTask(si)" class="premium-btn px-2.5 py-1 text-xs rounded-lg cursor-pointer font-medium shrink-0 flex items-center gap-1"
+            :style="{
+              background: 'var(--accent-subtle)',
+              color: 'var(--accent)',
+            }"
+            @mouseenter="($event.target as HTMLElement).style.background = 'var(--accent)'; ($event.target as HTMLElement).style.color = '#ffffff'"
+            @mouseleave="($event.target as HTMLElement).style.background = 'var(--accent-subtle)'; ($event.target as HTMLElement).style.color = 'var(--accent)'">
+            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/></svg>
+            任务
           </button>
-          <button @click="removeSection(si)" class="p-1 text-gray-400 hover:text-red-500 shrink-0 cursor-pointer">
+          <button @click.stop="removeSection(si)" class="premium-btn p-1.5 rounded-lg shrink-0 cursor-pointer transition-colors duration-200"
+            :style="{ color: 'var(--text-tertiary)' }"
+            @mouseenter="($event.target as HTMLElement).style.color = 'var(--error)'; ($event.target as HTMLElement).style.background = 'rgba(239,68,68,0.08)'"
+            @mouseleave="($event.target as HTMLElement).style.color = 'var(--text-tertiary)'; ($event.target as HTMLElement).style.background = 'transparent'">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
             </svg>
           </button>
         </div>
 
-        <!-- Tasks -->
-        <div class="p-2 md:p-3 space-y-2">
-          <div v-for="(task, ti) in section.tasks" :key="ti"
-            class="p-2 md:p-3 rounded-lg border"
-            :class="theme === 'dark' ? 'bg-gray-800/50 border-gray-700' : 'bg-gray-50/50 border-gray-200'">
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
-              <div>
-                <label class="text-xs text-gray-500 block mb-0.5">任务名称</label>
-                <input v-model="task.name" @input="emitCode" class="w-full px-2 py-1.5 text-sm border rounded focus:ring-2 focus:ring-blue-400 focus:border-blue-400 outline-none transition-shadow"
-                  :class="theme === 'dark' ? 'bg-gray-800 border-gray-600 text-gray-200' : 'bg-white border-gray-300 text-gray-800'" />
-              </div>
-              <div>
-                <label class="text-xs text-gray-500 block mb-0.5">任务ID</label>
-                <input v-model="task.id" @input="emitCode" class="w-full px-2 py-1.5 text-sm border rounded font-mono focus:ring-2 focus:ring-blue-400 focus:border-blue-400 outline-none transition-shadow"
-                  :class="theme === 'dark' ? 'bg-gray-800 border-gray-600 text-gray-200' : 'bg-white border-gray-300 text-gray-800'" />
-              </div>
-              <div>
-                <label class="text-xs text-gray-500 block mb-0.5">开始日期</label>
-                <input v-model="task.startDate" @input="emitCode" type="date" class="w-full px-2 py-1.5 text-sm border rounded focus:ring-2 focus:ring-blue-400 focus:border-blue-400 outline-none transition-shadow"
-                  :class="theme === 'dark' ? 'bg-gray-800 border-gray-600 text-gray-200' : 'bg-white border-gray-300 text-gray-800'" />
-              </div>
-              <div>
-                <label class="text-xs text-gray-500 block mb-0.5">工期</label>
-                <div class="flex gap-1">
-                  <input :value="getDurationNum(si, ti)" @input="onDurationNumInput(si, ti, ($event.target as HTMLInputElement).value)" type="number" min="0"
-                    class="w-20 sm:w-16 px-2 py-1.5 text-sm border rounded focus:ring-2 focus:ring-blue-400 focus:border-blue-400 outline-none transition-shadow"
-                    :class="theme === 'dark' ? 'bg-gray-800 border-gray-600 text-gray-200' : 'bg-white border-gray-300 text-gray-800'" />
-                  <select :value="taskDurationUnits[si] ?? 'd'" @change="onDurationUnitChange(si, ti, ($event.target as HTMLSelectElement).value)" class="flex-1 px-1 py-1.5 text-sm border rounded focus:ring-2 focus:ring-blue-400 focus:border-blue-400 outline-none transition-shadow cursor-pointer"
-                    :class="theme === 'dark' ? 'bg-gray-800 border-gray-600 text-gray-200' : 'bg-white border-gray-300 text-gray-800'">
-                    <option value="d">天</option>
-                    <option value="h">小时</option>
-                    <option value="w">周</option>
-                    <option value="m">月</option>
-                  </select>
+        <!-- Tasks (collapsible) -->
+        <div class="section-tasks-wrapper" :style="{ maxHeight: collapsedSections.has(si) ? '0px' : '2000px', overflow: 'hidden', transition: 'max-height 0.3s cubic-bezier(0.4, 0, 0.2, 1)' }">
+          <div class="p-2.5 md:p-3 space-y-2">
+            <div v-for="(task, ti) in section.tasks" :key="ti"
+              class="task-card p-3 md:p-3.5 rounded-lg relative"
+              :style="{
+                background: 'var(--bg-secondary)',
+                border: '1px solid var(--border-secondary)',
+              }">
+              <!-- Status indicator bar -->
+              <div class="absolute left-0 top-2 bottom-2 w-0.5 rounded-full"
+                :style="{
+                  background: task.status === 'done' ? 'var(--success)' :
+                             task.status === 'active' ? 'var(--accent)' :
+                             task.status === 'crit' ? 'var(--error)' :
+                             task.status === 'milestone' ? 'var(--warning)' :
+                             'var(--border-primary)'
+                }"></div>
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 pl-2">
+                <div>
+                  <label class="text-[10px] font-semibold block mb-1 tracking-widest uppercase" style="color: var(--text-tertiary); letter-spacing: 0.08em;">任务名称</label>
+                  <input v-model="task.name" @input="emitCode" class="premium-input w-full px-3 py-1.5 text-sm rounded-lg outline-none" />
                 </div>
-              </div>
-              <div>
-                <label class="text-xs text-gray-500 block mb-0.5">依赖任务</label>
-                <select v-model="task.dependsOn" @change="onDependsOnChange(task)" class="w-full px-2 py-1.5 text-sm border rounded focus:ring-2 focus:ring-blue-400 focus:border-blue-400 outline-none transition-shadow cursor-pointer"
-                  :class="theme === 'dark' ? 'bg-gray-800 border-gray-600 text-gray-200' : 'bg-white border-gray-300 text-gray-800'">
-                  <option value="">无依赖</option>
-                  <option v-for="t in getAllTasksExcept(task.id)" :key="t.id" :value="t.id">
-                    {{ t.name }} ({{ t.id }})
-                  </option>
-                </select>
-              </div>
-              <div class="flex items-end gap-1">
-                <div class="flex-1">
-                  <label class="text-xs text-gray-500 block mb-0.5">状态</label>
-                  <select v-model="task.status" @change="onStatusChange(task)" class="w-full px-2 py-1.5 text-sm border rounded focus:ring-2 focus:ring-blue-400 focus:border-blue-400 outline-none transition-shadow cursor-pointer"
-                    :class="theme === 'dark' ? 'bg-gray-800 border-gray-600 text-gray-200' : 'bg-white border-gray-300 text-gray-800'">
-                    <option value="">普通</option>
-                    <option value="active">进行中</option>
-                    <option value="done">已完成</option>
-                    <option value="crit">关键</option>
-                    <option value="milestone">里程碑</option>
-                  </select>
+                <div>
+                  <label class="text-[10px] font-semibold block mb-1 tracking-widest uppercase" style="color: var(--text-tertiary); letter-spacing: 0.08em;">任务ID</label>
+                  <input v-model="task.id" @input="emitCode" class="premium-input w-full px-3 py-1.5 text-sm rounded-lg font-mono outline-none" />
                 </div>
-                <button @click="removeTask(si, ti)" class="p-1.5 text-gray-400 hover:text-red-500 border rounded shrink-0 cursor-pointer transition-colors"
-                  :class="theme === 'dark' ? 'border-gray-600 hover:bg-red-900/30' : 'border-gray-300 hover:bg-red-50'">
-                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                  </svg>
-                </button>
+                <div>
+                  <label class="text-[10px] font-semibold block mb-1 tracking-widest uppercase" style="color: var(--text-tertiary); letter-spacing: 0.08em;">开始日期</label>
+                  <input v-model="task.startDate" @input="emitCode" type="date" class="premium-input w-full px-3 py-1.5 text-sm rounded-lg outline-none" />
+                </div>
+                <div>
+                  <label class="text-[10px] font-semibold block mb-1 tracking-widest uppercase" style="color: var(--text-tertiary); letter-spacing: 0.08em;">工期</label>
+                  <div class="flex gap-1.5">
+                    <input :value="getDurationNum(si, ti)" @input="onDurationNumInput(si, ti, ($event.target as HTMLInputElement).value)" type="number" min="0"
+                      class="premium-input w-20 sm:w-16 px-3 py-1.5 text-sm rounded-lg outline-none" />
+                    <div class="flex-1">
+                      <CustomSelect
+                        :model-value="taskDurationUnits[si] ?? 'd'"
+                        :options="durationUnitOptions"
+                        @update:model-value="onDurationUnitChange(si, ti, $event)"
+                      />
+                    </div>
+                  </div>
+                </div>
+                <div>
+                  <label class="text-[10px] font-semibold block mb-1 tracking-widest uppercase" style="color: var(--text-tertiary); letter-spacing: 0.08em;">依赖任务</label>
+                  <CustomSelect
+                    v-model="task.dependsOn"
+                    :options="getDependsOnOptions(task.id)"
+                    @change="onDependsOnChange(task)"
+                  />
+                </div>
+                <div class="flex items-end gap-1.5">
+                  <div class="flex-1">
+                    <label class="text-[10px] font-semibold block mb-1 tracking-widest uppercase" style="color: var(--text-tertiary); letter-spacing: 0.08em;">状态</label>
+                    <CustomSelect
+                      v-model="task.status"
+                      :options="statusOptions"
+                      @change="onStatusChange(task)"
+                    />
+                  </div>
+                  <button @click="removeTask(si, ti)" class="premium-btn p-1.5 rounded-lg shrink-0 cursor-pointer transition-colors duration-200"
+                    :style="{
+                      color: 'var(--text-tertiary)',
+                      border: '1px solid var(--border-primary)',
+                    }"
+                    @mouseenter="($event.target as HTMLElement).style.color = 'var(--error)'; ($event.target as HTMLElement).style.borderColor = 'var(--error)'; ($event.target as HTMLElement).style.background = 'rgba(239,68,68,0.08)'"
+                    @mouseleave="($event.target as HTMLElement).style.color = 'var(--text-tertiary)'; ($event.target as HTMLElement).style.borderColor = 'var(--border-primary)'; ($event.target as HTMLElement).style.background = 'transparent'">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  </button>
+                </div>
               </div>
             </div>
-          </div>
-          <div v-if="section.tasks.length === 0" class="text-center py-4 text-gray-400 text-sm">
-            暂无任务，点击上方"+ 任务"添加
+            <div v-if="section.tasks.length === 0" class="text-center py-6 text-sm" style="color: var(--text-tertiary);">
+              暂无任务，点击上方"+ 任务"添加
+            </div>
           </div>
         </div>
       </div>
 
-      <div v-if="sections.length === 0" class="text-center py-8 text-gray-400 text-sm">
+      <div v-if="sections.length === 0" class="text-center py-10 text-sm" style="color: var(--text-tertiary);">
         暂无分区，点击上方"+ 分区"添加
       </div>
     </div>
@@ -128,6 +167,7 @@
 
 <script setup lang="ts">
 import { ref, watch } from 'vue'
+import CustomSelect from './CustomSelect.vue'
 import { parseMermaidGantt, generateMermaidGantt, generateTaskId } from '../utils/ganttParser'
 import type { GanttSection, GanttTask } from '../types'
 
@@ -145,6 +185,52 @@ const dateFormat = ref('YYYY-MM-DD')
 const sections = ref<GanttSection[]>([])
 const taskDurationNums = ref<Record<number, Record<number, number>>>({})
 const taskDurationUnits = ref<Record<number, string>>({})
+const collapsedSections = ref<Set<number>>(new Set())
+
+// Select options
+const dateFormatOptions = [
+  { value: 'YYYY-MM-DD', label: 'YYYY-MM-DD' },
+  { value: 'YYYY/MM/DD', label: 'YYYY/MM/DD' },
+  { value: 'MM/DD/YYYY', label: 'MM/DD/YYYY' },
+  { value: 'DD-MM-YYYY', label: 'DD-MM-YYYY' },
+]
+
+const durationUnitOptions = [
+  { value: 'd', label: '天' },
+  { value: 'h', label: '小时' },
+  { value: 'w', label: '周' },
+  { value: 'm', label: '月' },
+]
+
+const statusOptions = [
+  { value: '', label: '普通' },
+  { value: 'active', label: '进行中' },
+  { value: 'done', label: '已完成' },
+  { value: 'crit', label: '关键' },
+  { value: 'milestone', label: '里程碑' },
+]
+
+const getDependsOnOptions = (excludeId: string) => {
+  const options: { value: string; label: string }[] = [{ value: '', label: '无依赖' }]
+  for (const section of sections.value) {
+    for (const task of section.tasks) {
+      if (task.id !== excludeId) {
+        options.push({ value: task.id, label: `${task.name} (${task.id})` })
+      }
+    }
+  }
+  return options
+}
+
+const toggleSection = (si: number) => {
+  const newSet = new Set(collapsedSections.value)
+  if (newSet.has(si)) {
+    newSet.delete(si)
+  } else {
+    newSet.add(si)
+  }
+  collapsedSections.value = newSet
+}
 
 // Flag to prevent infinite loop: when we emit code, skip re-parsing
 let isEmitting = false
@@ -227,18 +313,6 @@ const onStatusChange = (task: GanttTask) => {
   emitCode()
 }
 
-const getAllTasksExcept = (excludeId: string): GanttTask[] => {
-  const all: GanttTask[] = []
-  for (const section of sections.value) {
-    for (const task of section.tasks) {
-      if (task.id !== excludeId) {
-        all.push(task)
-      }
-    }
-  }
-  return all
-}
-
 const addSection = () => {
   sections.value.push({ name: '新分区', tasks: [] })
   emitCode()
@@ -246,10 +320,22 @@ const addSection = () => {
 
 const removeSection = (index: number) => {
   sections.value.splice(index, 1)
+  // Clean up collapsed state
+  const newSet = new Set<number>()
+  collapsedSections.value.forEach(i => {
+    if (i < index) newSet.add(i)
+    else if (i > index) newSet.add(i - 1)
+  })
+  collapsedSections.value = newSet
   emitCode()
 }
 
 const addTask = (sectionIndex: number) => {
+  // Auto-expand when adding task
+  const newSet = new Set(collapsedSections.value)
+  newSet.delete(sectionIndex)
+  collapsedSections.value = newSet
+
   const existingIds = sections.value.flatMap(s => s.tasks.map(t => t.id))
   const newId = generateTaskId(existingIds)
   const today = new Date().toISOString().split('T')[0]

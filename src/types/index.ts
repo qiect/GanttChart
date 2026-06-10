@@ -27,10 +27,13 @@ export interface GanttSection {
   tasks: GanttTask[]
 }
 
+export type ChartThemeId = 'indigo' | 'emerald' | 'ocean' | 'obsidian' | 'amber' | 'slate'
+
 export interface AppState {
   code: string
   theme: 'light' | 'dark'
   splitRatio: number
   activeTemplate: string | null
   editorMode: 'code' | 'visual'
+  chartTheme: ChartThemeId
 }
