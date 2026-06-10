@@ -160,7 +160,7 @@ body {
   outline: none;
 }
 
-/* ── Premium Select ── */
+/* ── Premium Select (legacy, kept for compatibility) ── */
 .premium-select-wrap {
   position: relative;
 }
