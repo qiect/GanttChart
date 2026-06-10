@@ -113,7 +113,7 @@
                       class="premium-input w-20 sm:w-16 px-3 py-1.5 text-sm rounded-lg outline-none" />
                     <div class="flex-1">
                       <CustomSelect
-                        :model-value="taskDurationUnits[si] ?? 'd'"
+                        :model-value="taskDurationUnits[si]?.[ti] ?? 'd'"
                         :options="durationUnitOptions"
                         @update:model-value="onDurationUnitChange(si, ti, $event)"
                       />
@@ -184,7 +184,7 @@ const title = ref('项目计划')
 const dateFormat = ref('YYYY-MM-DD')
 const sections = ref<GanttSection[]>([])
 const taskDurationNums = ref<Record<number, Record<number, number>>>({})
-const taskDurationUnits = ref<Record<number, string>>({})
+const taskDurationUnits = ref<Record<number, Record<number, string>>>({})
 const collapsedSections = ref<Set<number>>(new Set())
 
 // Select options
@@ -256,14 +256,15 @@ const parseCode = () => {
   taskDurationUnits.value = {}
   parsed.forEach((section, si) => {
     taskDurationNums.value[si] = {}
+    taskDurationUnits.value[si] = {}
     section.tasks.forEach((task, ti) => {
       const match = task.duration.match(/^(\d+)([dhwm])$/)
       if (match) {
         taskDurationNums.value[si][ti] = parseInt(match[1])
-        taskDurationUnits.value[si] = match[2]
+        taskDurationUnits.value[si][ti] = match[2]
       } else {
         taskDurationNums.value[si][ti] = 0
-        taskDurationUnits.value[si] = 'd'
+        taskDurationUnits.value[si][ti] = 'd'
       }
     })
   })
@@ -285,13 +286,14 @@ const onDurationNumInput = (si: number, ti: number, val: string) => {
   const num = parseInt(val) || 0
   if (!taskDurationNums.value[si]) taskDurationNums.value[si] = {}
   taskDurationNums.value[si][ti] = num
-  const unit = taskDurationUnits.value[si] ?? 'd'
+  const unit = taskDurationUnits.value[si]?.[ti] ?? 'd'
   sections.value[si].tasks[ti].duration = `${num}${unit}`
   emitCode()
 }
 
 const onDurationUnitChange = (si: number, ti: number, val: string) => {
-  taskDurationUnits.value[si] = val
+  if (!taskDurationUnits.value[si]) taskDurationUnits.value[si] = {}
+  taskDurationUnits.value[si][ti] = val
   const num = taskDurationNums.value[si]?.[ti] ?? 0
   sections.value[si].tasks[ti].duration = `${num}${val}`
   emitCode()
@@ -350,8 +352,9 @@ const addTask = (sectionIndex: number) => {
   })
   const ti = sections.value[sectionIndex].tasks.length - 1
   if (!taskDurationNums.value[sectionIndex]) taskDurationNums.value[sectionIndex] = {}
+  if (!taskDurationUnits.value[sectionIndex]) taskDurationUnits.value[sectionIndex] = {}
   taskDurationNums.value[sectionIndex][ti] = 7
-  taskDurationUnits.value[sectionIndex] = 'd'
+  taskDurationUnits.value[sectionIndex][ti] = 'd'
   emitCode()
 }
 
