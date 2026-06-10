@@ -14,12 +14,13 @@ const baseGanttConfig = {
   barHeight: 24,
   barGap: 6,
   topPadding: 50,
-  leftPadding: 75,
+  leftPadding: 200,
   gridLineStartPadding: 35,
   fontSize: 12,
   sectionFontSize: 13,
   numberSectionStyles: 4,
   axisFormat: '%Y-%m-%d',
+  useWidth: 1200,
 }
 
 export const chartThemePresets: ChartThemePreset[] = [

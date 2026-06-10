@@ -1,21 +1,18 @@
-import type { GanttTemplate } from '../types'
-
 // Helper: generate date string offset from today
-function d(offset: number = 0): string {
-  const date = new Date()
-  date.setDate(date.getDate() + offset)
-  const y = date.getFullYear()
-  const m = String(date.getMonth() + 1).padStart(2, '0')
-  const day = String(date.getDate()).padStart(2, '0')
-  return `${y}-${m}-${day}`
+function d(offset = 0) {
+    const date = new Date();
+    date.setDate(date.getDate() + offset);
+    const y = date.getFullYear();
+    const m = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${y}-${m}-${day}`;
 }
-
-export const ganttTemplates: GanttTemplate[] = [
-  {
-    id: 'blank',
-    name: '空白模板',
-    description: '从零开始创建甘特图',
-    code: `gantt
+export const ganttTemplates = [
+    {
+        id: 'blank',
+        name: '空白模板',
+        description: '从零开始创建甘特图',
+        code: `gantt
     title 项目计划
     dateFormat YYYY-MM-DD
     axisFormat %m/%d
@@ -27,12 +24,12 @@ export const ganttTemplates: GanttTemplate[] = [
     section 阶段二
     任务3             :b1, after a2, 10d
     任务4             :b2, after b1, 7d`,
-  },
-  {
-    id: 'software-dev',
-    name: '软件开发项目',
-    description: '典型的软件开发项目甘特图模板',
-    code: `gantt
+    },
+    {
+        id: 'software-dev',
+        name: '软件开发项目',
+        description: '典型的软件开发项目甘特图模板',
+        code: `gantt
     title 软件开发项目计划
     dateFormat YYYY-MM-DD
     axisFormat %m/%d
@@ -60,12 +57,12 @@ export const ganttTemplates: GanttTemplate[] = [
     section 部署
     生产环境部署        :e1, after d3, 3d
     项目上线           :milestone, after e1, 0d`,
-  },
-  {
-    id: 'marketing',
-    name: '市场营销计划',
-    description: '市场营销活动甘特图模板',
-    code: `gantt
+    },
+    {
+        id: 'marketing',
+        name: '市场营销计划',
+        description: '市场营销活动甘特图模板',
+        code: `gantt
     title 市场营销活动计划
     dateFormat YYYY-MM-DD
     axisFormat %m/%d
@@ -89,12 +86,12 @@ export const ganttTemplates: GanttTemplate[] = [
     数据收集           :d1, after c1, 5d
     ROI 分析          :d2, after d1, 3d
     报告撰写           :d3, after d2, 2d`,
-  },
-  {
-    id: 'construction',
-    name: '建筑工程项目',
-    description: '建筑工程项目甘特图模板',
-    code: `gantt
+    },
+    {
+        id: 'construction',
+        name: '建筑工程项目',
+        description: '建筑工程项目甘特图模板',
+        code: `gantt
     title 建筑工程项目计划
     dateFormat YYYY-MM-DD
     axisFormat %m/%d
@@ -122,12 +119,12 @@ export const ganttTemplates: GanttTemplate[] = [
     section 竣工验收
     竣工清理           :e1, after d3, 5d
     验收检查           :milestone, after e1, 0d`,
-  },
-  {
-    id: 'product-launch',
-    name: '产品发布计划',
-    description: '新产品从研发到上市的完整流程',
-    code: `gantt
+    },
+    {
+        id: 'product-launch',
+        name: '产品发布计划',
+        description: '新产品从研发到上市的完整流程',
+        code: `gantt
     title 产品发布计划
     dateFormat YYYY-MM-DD
     axisFormat %m/%d
@@ -151,12 +148,12 @@ export const ganttTemplates: GanttTemplate[] = [
     发布会筹备         :d1, after c2, 7d
     产品上线           :milestone, after d1, 0d
     售后体系搭建        :d2, after d1, 10d`,
-  },
-  {
-    id: 'event-planning',
-    name: '活动策划',
-    description: '大型活动/会议策划与执行',
-    code: `gantt
+    },
+    {
+        id: 'event-planning',
+        name: '活动策划',
+        description: '大型活动/会议策划与执行',
+        code: `gantt
     title 大型活动策划方案
     dateFormat YYYY-MM-DD
     axisFormat %m/%d
@@ -184,12 +181,12 @@ export const ganttTemplates: GanttTemplate[] = [
     section 后续总结
     费用结算           :e1, after d2, 5d
     活动复盘           :e2, after e1, 3d`,
-  },
-  {
-    id: 'education-course',
-    name: '教育培训课程',
-    description: '课程开发与教学计划安排',
-    code: `gantt
+    },
+    {
+        id: 'education-course',
+        name: '教育培训课程',
+        description: '课程开发与教学计划安排',
+        code: `gantt
     title 教育培训课程计划
     dateFormat YYYY-MM-DD
     axisFormat %m/%d
@@ -213,12 +210,12 @@ export const ganttTemplates: GanttTemplate[] = [
     期末考试           :d1, after c2, 3d
     成绩评定           :d2, after d1, 5d
     教学总结           :d3, after d2, 3d`,
-  },
-  {
-    id: 'hr-recruitment',
-    name: '招聘计划',
-    description: '企业人才招聘全流程管理',
-    code: `gantt
+    },
+    {
+        id: 'hr-recruitment',
+        name: '招聘计划',
+        description: '企业人才招聘全流程管理',
+        code: `gantt
     title 人才招聘计划
     dateFormat YYYY-MM-DD
     axisFormat %m/%d
@@ -242,12 +239,12 @@ export const ganttTemplates: GanttTemplate[] = [
     Offer 发放         :d1, after c3, 3d
     背景调查           :d2, after d1, 5d
     入职培训           :d3, after d2, 3d`,
-  },
-  {
-    id: 'data-project',
-    name: '数据分析项目',
-    description: '数据分析与BI项目实施流程',
-    code: `gantt
+    },
+    {
+        id: 'data-project',
+        name: '数据分析项目',
+        description: '数据分析与BI项目实施流程',
+        code: `gantt
     title 数据分析项目计划
     dateFormat YYYY-MM-DD
     axisFormat %m/%d
@@ -271,12 +268,12 @@ export const ganttTemplates: GanttTemplate[] = [
     可视化报表开发       :d1, after c3, 10d
     用户培训           :d2, after d1, 3d
     项目验收           :milestone, after d2, 0d`,
-  },
-  {
-    id: 'manufacturing',
-    name: '生产制造计划',
-    description: '制造业生产排程与交付管理',
-    code: `gantt
+    },
+    {
+        id: 'manufacturing',
+        name: '生产制造计划',
+        description: '制造业生产排程与交付管理',
+        code: `gantt
     title 生产制造计划
     dateFormat YYYY-MM-DD
     axisFormat %m/%d
@@ -300,12 +297,12 @@ export const ganttTemplates: GanttTemplate[] = [
     成品检验           :d1, after c3, 2d
     包装入库           :d2, after d1, 2d
     发货交付           :d3, after d2, 3d`,
-  },
-  {
-    id: 'server-migration',
-    name: '系统迁移项目',
-    description: '服务器/系统迁移升级计划',
-    code: `gantt
+    },
+    {
+        id: 'server-migration',
+        name: '系统迁移项目',
+        description: '服务器/系统迁移升级计划',
+        code: `gantt
     title 系统迁移项目计划
     dateFormat YYYY-MM-DD
     axisFormat %m/%d
@@ -333,12 +330,12 @@ export const ganttTemplates: GanttTemplate[] = [
     section 收尾
     旧系统下线         :e1, after d3, 3d
     项目总结           :e2, after e1, 2d`,
-  },
-  {
-    id: 'research-project',
-    name: '科研项目',
-    description: '学术研究项目进度管理',
-    code: `gantt
+    },
+    {
+        id: 'research-project',
+        name: '科研项目',
+        description: '学术研究项目进度管理',
+        code: `gantt
     title 科研项目计划
     dateFormat YYYY-MM-DD
     axisFormat %m/%d
@@ -362,12 +359,12 @@ export const ganttTemplates: GanttTemplate[] = [
     答辩准备           :d1, after c2, 10d
     项目结题报告        :d2, after d1, 7d
     成果发布           :d3, after d2, 5d`,
-  },
-  {
-    id: 'startup-roadmap',
-    name: '创业路线图',
-    description: '创业公司从0到1的发展规划',
-    code: `gantt
+    },
+    {
+        id: 'startup-roadmap',
+        name: '创业路线图',
+        description: '创业公司从0到1的发展规划',
+        code: `gantt
     title 创业路线图
     dateFormat YYYY-MM-DD
     axisFormat %m/%d
@@ -391,12 +388,12 @@ export const ganttTemplates: GanttTemplate[] = [
     商业计划书编写       :d1, after b3, 10d
     投资人对接         :d2, after d1, 20d
     融资完成           :milestone, after d2, 0d`,
-  },
-  {
-    id: 'mobile-app',
-    name: '移动应用开发',
-    description: 'App从设计到上线的完整流程',
-    code: `gantt
+    },
+    {
+        id: 'mobile-app',
+        name: '移动应用开发',
+        description: 'App从设计到上线的完整流程',
+        code: `gantt
     title 移动应用开发计划
     dateFormat YYYY-MM-DD
     axisFormat %m/%d
@@ -421,12 +418,12 @@ export const ganttTemplates: GanttTemplate[] = [
     应用商店审核        :d1, after c3, 7d
     灰度发布           :d2, after d1, 5d
     正式上线           :milestone, after d2, 0d`,
-  },
-  {
-    id: 'annual-plan',
-    name: '年度工作计划',
-    description: '企业年度工作规划与目标分解',
-    code: `gantt
+    },
+    {
+        id: 'annual-plan',
+        name: '年度工作计划',
+        description: '企业年度工作规划与目标分解',
+        code: `gantt
     title 年度工作计划
     dateFormat YYYY-MM-DD
     axisFormat %m/%d
@@ -450,12 +447,12 @@ export const ganttTemplates: GanttTemplate[] = [
     年度目标冲刺        :d1, after c3, 30d
     绩效考核           :d2, after d1, 10d
     年度总结与展望       :d3, after d2, 7d`,
-  },
-  {
-    id: 'supply-chain',
-    name: '供应链管理',
-    description: '供应链优化与物流管理项目',
-    code: `gantt
+    },
+    {
+        id: 'supply-chain',
+        name: '供应链管理',
+        description: '供应链优化与物流管理项目',
+        code: `gantt
     title 供应链优化项目
     dateFormat YYYY-MM-DD
     axisFormat %m/%d
@@ -479,12 +476,12 @@ export const ganttTemplates: GanttTemplate[] = [
     试运行            :d1, after c3, 14d
     流程优化调整        :d2, after d1, 7d
     全面推广           :milestone, after d2, 0d`,
-  },
-  {
-    id: 'website-dev',
-    name: '网站开发项目',
-    description: '企业官网或门户网站建设流程',
-    code: `gantt
+    },
+    {
+        id: 'website-dev',
+        name: '网站开发项目',
+        description: '企业官网或门户网站建设流程',
+        code: `gantt
     title 网站开发项目计划
     dateFormat YYYY-MM-DD
     axisFormat %m/%d
@@ -510,12 +507,12 @@ export const ganttTemplates: GanttTemplate[] = [
     兼容性与性能测试     :d2, after d1, 5d
     内容填充           :d3, after d2, 3d
     正式上线           :milestone, after d3, 0d`,
-  },
-  {
-    id: 'ecommerce',
-    name: '电商运营',
-    description: '电商平台运营与促销活动规划',
-    code: `gantt
+    },
+    {
+        id: 'ecommerce',
+        name: '电商运营',
+        description: '电商平台运营与促销活动规划',
+        code: `gantt
     title 电商运营计划
     dateFormat YYYY-MM-DD
     axisFormat %m/%d
@@ -540,12 +537,12 @@ export const ganttTemplates: GanttTemplate[] = [
     活动数据分析        :d1, after c3, 3d
     运营策略调整        :d2, after d1, 5d
     下期活动规划        :d3, after d2, 3d`,
-  },
-  {
-    id: 'digital-transform',
-    name: '数字化转型',
-    description: '企业数字化转型实施路线图',
-    code: `gantt
+    },
+    {
+        id: 'digital-transform',
+        name: '数字化转型',
+        description: '企业数字化转型实施路线图',
+        code: `gantt
     title 数字化转型项目
     dateFormat YYYY-MM-DD
     axisFormat %m/%d
@@ -570,12 +567,12 @@ export const ganttTemplates: GanttTemplate[] = [
     全员培训           :d2, after d1, 10d
     全面推广           :d3, after d2, 20d
     转型验收           :milestone, after d3, 0d`,
-  },
-  {
-    id: 'office-renovation',
-    name: '办公室装修',
-    description: '办公空间装修改造项目',
-    code: `gantt
+    },
+    {
+        id: 'office-renovation',
+        name: '办公室装修',
+        description: '办公空间装修改造项目',
+        code: `gantt
     title 办公室装修项目
     dateFormat YYYY-MM-DD
     axisFormat %m/%d
@@ -601,12 +598,12 @@ export const ganttTemplates: GanttTemplate[] = [
     安装与调试         :e1, after d1, 5d
     保洁与通风         :e2, after e1, 3d
     竣工验收           :milestone, after e2, 0d`,
-  },
-  {
-    id: 'wedding',
-    name: '婚礼策划',
-    description: '婚礼筹备全流程管理',
-    code: `gantt
+    },
+    {
+        id: 'wedding',
+        name: '婚礼策划',
+        description: '婚礼筹备全流程管理',
+        code: `gantt
     title 婚礼策划方案
     dateFormat YYYY-MM-DD
     axisFormat %m/%d
@@ -634,12 +631,12 @@ export const ganttTemplates: GanttTemplate[] = [
     section 婚后事宜
     蜜月旅行           :e1, after d2, 10d
     致谢与回礼         :e2, after e1, 5d`,
-  },
-  {
-    id: 'film-production',
-    name: '影视制作',
-    description: '影视/短视频项目制作流程',
-    code: `gantt
+    },
+    {
+        id: 'film-production',
+        name: '影视制作',
+        description: '影视/短视频项目制作流程',
+        code: `gantt
     title 影视制作项目
     dateFormat YYYY-MM-DD
     axisFormat %m/%d
@@ -669,12 +666,12 @@ export const ganttTemplates: GanttTemplate[] = [
     审查与修改         :e1, after d3, 5d
     宣发推广           :e2, after e1, 10d
     正式上映           :milestone, after e2, 0d`,
-  },
-  {
-    id: 'game-dev',
-    name: '游戏开发',
-    description: '游戏从概念到上线的开发流程',
-    code: `gantt
+    },
+    {
+        id: 'game-dev',
+        name: '游戏开发',
+        description: '游戏从概念到上线的开发流程',
+        code: `gantt
     title 游戏开发项目
     dateFormat YYYY-MM-DD
     axisFormat %m/%d
@@ -703,12 +700,12 @@ export const ganttTemplates: GanttTemplate[] = [
     上线准备           :e1, after d3, 5d
     正式发布           :milestone, after e1, 0d
     运营活动规划        :e2, after e1, 10d`,
-  },
-  {
-    id: 'ai-project',
-    name: 'AI/ML项目',
-    description: '人工智能与机器学习项目实施',
-    code: `gantt
+    },
+    {
+        id: 'ai-project',
+        name: 'AI/ML项目',
+        description: '人工智能与机器学习项目实施',
+        code: `gantt
     title AI/ML 项目计划
     dateFormat YYYY-MM-DD
     axisFormat %m/%d
@@ -733,12 +730,12 @@ export const ganttTemplates: GanttTemplate[] = [
     A/B 测试          :d2, after d1, 10d
     监控与迭代         :d3, after d2, 7d
     项目验收           :milestone, after d3, 0d`,
-  },
-  {
-    id: 'quality-mgmt',
-    name: '质量管理项目',
-    description: '质量体系建立与改进项目',
-    code: `gantt
+    },
+    {
+        id: 'quality-mgmt',
+        name: '质量管理项目',
+        description: '质量体系建立与改进项目',
+        code: `gantt
     title 质量管理项目
     dateFormat YYYY-MM-DD
     axisFormat %m/%d
@@ -762,12 +759,12 @@ export const ganttTemplates: GanttTemplate[] = [
     内部审核           :d1, after c3, 5d
     管理评审           :d2, after d1, 3d
     外部认证审核        :milestone, after d2, 0d`,
-  },
-  {
-    id: 'compliance-audit',
-    name: '合规审计',
-    description: '企业合规审查与整改项目',
-    code: `gantt
+    },
+    {
+        id: 'compliance-audit',
+        name: '合规审计',
+        description: '企业合规审查与整改项目',
+        code: `gantt
     title 合规审计项目
     dateFormat YYYY-MM-DD
     axisFormat %m/%d
@@ -792,12 +789,12 @@ export const ganttTemplates: GanttTemplate[] = [
     整改措施落实        :d2, after d1, 15d
     整改效果验证        :d3, after d2, 5d
     审计关闭           :milestone, after d3, 0d`,
-  },
-  {
-    id: 'cloud-migration',
-    name: '云迁移项目',
-    description: '企业IT系统云化迁移方案',
-    code: `gantt
+    },
+    {
+        id: 'cloud-migration',
+        name: '云迁移项目',
+        description: '企业IT系统云化迁移方案',
+        code: `gantt
     title 云迁移项目计划
     dateFormat YYYY-MM-DD
     axisFormat %m/%d
@@ -823,12 +820,12 @@ export const ganttTemplates: GanttTemplate[] = [
     流量切换           :d3, after d2, 3d
     稳定性观察         :d4, after d3, 7d
     迁移完成           :milestone, after d4, 0d`,
-  },
-  {
-    id: 'community-ops',
-    name: '社区运营',
-    description: '线上社区从搭建到运营的规划',
-    code: `gantt
+    },
+    {
+        id: 'community-ops',
+        name: '社区运营',
+        description: '线上社区从搭建到运营的规划',
+        code: `gantt
     title 社区运营计划
     dateFormat YYYY-MM-DD
     axisFormat %m/%d
@@ -852,12 +849,12 @@ export const ganttTemplates: GanttTemplate[] = [
     用户等级体系        :d1, after c1, 7d
     创作者激励计划       :d2, after d1, 10d
     社区商业化探索       :d3, after d2, 10d`,
-  },
-  {
-    id: 'product-redesign',
-    name: '产品改版',
-    description: '现有产品升级改版项目',
-    code: `gantt
+    },
+    {
+        id: 'product-redesign',
+        name: '产品改版',
+        description: '现有产品升级改版项目',
+        code: `gantt
     title 产品改版项目
     dateFormat YYYY-MM-DD
     axisFormat %m/%d
@@ -882,12 +879,12 @@ export const ganttTemplates: GanttTemplate[] = [
     灰度发布           :d1, after c1, 7d
     用户反馈收集        :d2, after d1, 7d
     全量上线           :milestone, after d2, 0d`,
-  },
-  {
-    id: 'ma-due-diligence',
-    name: '并购尽调',
-    description: '企业并购尽职调查项目',
-    code: `gantt
+    },
+    {
+        id: 'ma-due-diligence',
+        name: '并购尽调',
+        description: '企业并购尽职调查项目',
+        code: `gantt
     title 并购尽职调查
     dateFormat YYYY-MM-DD
     axisFormat %m/%d
@@ -916,5 +913,5 @@ export const ganttTemplates: GanttTemplate[] = [
     尽调报告编写        :e1, after c3, 5d
     投资决策建议        :e2, after e1, 3d
     交易方案确定        :milestone, after e2, 0d`,
-  },
-]
+    },
+];

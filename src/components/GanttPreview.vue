@@ -116,12 +116,12 @@
     <div
       v-if="svg && code.trim()"
       ref="scrollContainerRef"
-      class="flex-1 overflow-auto"
+      class="flex-1 overflow-auto gantt-preview-scroll"
       @wheel.ctrl="onCtrlWheel"
     >
       <div
         ref="containerRef"
-        class="p-4 md:p-6 inline-block min-w-full"
+        class="p-4 md:p-6 inline-block min-w-full gantt-svg-container"
         :style="{ zoom: zoom }"
         v-html="svg"
       ></div>
@@ -172,7 +172,8 @@ const fitToWidth = () => {
   const containerWidth = scrollContainerRef.value.clientWidth - 48
   if (naturalWidth > 0) {
     const newZoom = containerWidth / naturalWidth
-    zoom.value = Math.max(0.3, Math.min(3, Math.round(newZoom * 10) / 10))
+    // Don't zoom out below 0.5 to keep chart readable for very wide charts
+    zoom.value = Math.max(0.5, Math.min(3, Math.round(newZoom * 10) / 10))
   }
 }
 
@@ -247,14 +248,72 @@ const render = async () => {
   }
 }
 
+// Post-process SVG to fix text visibility and bar width issues
+const postProcessSvg = () => {
+  if (!containerRef.value) return
+  const svgEl = containerRef.value.querySelector('svg')
+  if (!svgEl) return
+
+  // 1. Ensure SVG overflow is visible so text isn't clipped
+  svgEl.setAttribute('overflow', 'visible')
+
+  // 2. Set minimum width for task bars that are too narrow
+  const rects = svgEl.querySelectorAll('rect')
+  rects.forEach(rect => {
+    const w = parseFloat(rect.getAttribute('width') || '0')
+    // Only boost bars that exist but are too thin to see/click
+    if (w > 0 && w < 4) {
+      rect.setAttribute('width', '4')
+    }
+  })
+
+  // 3. Remove clip-path from elements containing text to prevent text clipping
+  const clippedTexts = svgEl.querySelectorAll('text')
+  clippedTexts.forEach(textEl => {
+    const parent = textEl.parentElement
+    if (parent && parent.hasAttribute('clip-path')) {
+      parent.removeAttribute('clip-path')
+    }
+    // Ensure text is visible
+    textEl.setAttribute('overflow', 'visible')
+  })
+
+  // 4. Handle very wide charts: ensure the SVG has a reasonable viewBox
+  const svgWidth = parseFloat(svgEl.getAttribute('width') || '0')
+  const viewBox = svgEl.getAttribute('viewBox')
+  if (svgWidth > 5000 && viewBox) {
+    // Cap SVG width at 5000px and let scroll handle the rest
+    svgEl.setAttribute('width', '5000')
+  }
+}
+
 watch([() => props.code, () => props.chartTheme], render, { immediate: true })
 
-// Auto fit on first render
+// Auto fit on first render, with SVG post-processing
 watch(svg, (newSvg) => {
   if (newSvg) {
     nextTick(() => {
+      postProcessSvg()
       fitToWidth()
     })
   }
 })
 </script>
+
+<style scoped>
+.gantt-svg-container :deep(svg) {
+  overflow: visible !important;
+}
+
+.gantt-svg-container :deep(svg text) {
+  overflow: visible !important;
+}
+
+.gantt-svg-container :deep(svg .taskText) {
+  overflow: visible !important;
+}
+
+.gantt-preview-scroll {
+  scrollbar-width: thin;
+}
+</style>
