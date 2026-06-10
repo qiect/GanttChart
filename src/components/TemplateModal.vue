@@ -14,11 +14,41 @@
       <div class="p-5 md:p-7 shrink-0" style="border-bottom: 1px solid var(--border-secondary);">
         <h2 class="text-lg md:text-xl font-semibold" style="color: var(--text-primary);">选择模板</h2>
         <p class="text-sm mt-1.5" style="color: var(--text-tertiary);">选择一个预设模板快速开始</p>
+        <!-- Search -->
+        <div class="mt-3 relative">
+          <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 pointer-events-none" style="color: var(--text-tertiary);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+          </svg>
+          <input
+            v-model="searchQuery"
+            placeholder="搜索模板..."
+            class="w-full pl-9 pr-3 py-2 text-sm rounded-lg outline-none transition-all duration-200"
+            :style="{
+              background: 'var(--bg-secondary)',
+              border: '1px solid var(--border-primary)',
+              color: 'var(--text-primary)',
+            }"
+            @focus="($event.target as HTMLElement).style.borderColor = 'var(--accent)'"
+            @blur="($event.target as HTMLElement).style.borderColor = 'var(--border-primary)'"
+          />
+          <button
+            v-if="searchQuery"
+            class="absolute right-2 top-1/2 -translate-y-1/2 p-0.5 rounded cursor-pointer transition-colors duration-200"
+            :style="{ color: 'var(--text-tertiary)' }"
+            @click="searchQuery = ''"
+            @mouseenter="($event.target as HTMLElement).style.color = 'var(--text-primary)'"
+            @mouseleave="($event.target as HTMLElement).style.color = 'var(--text-tertiary)'"
+          >
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
       </div>
       <!-- Grid -->
       <div class="p-4 md:p-6 overflow-y-auto flex-1 grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-4">
         <button
-          v-for="template in ganttTemplates"
+          v-for="template in filteredTemplates"
           :key="template.id"
           class="text-left p-4 md:p-5 rounded-xl transition-all duration-200 group cursor-pointer"
           :style="{
@@ -36,9 +66,15 @@
             {{ template.description }}
           </p>
         </button>
+        <div v-if="filteredTemplates.length === 0" class="col-span-2 text-center py-10 text-sm" style="color: var(--text-tertiary);">
+          没有找到匹配的模板
+        </div>
       </div>
       <!-- Footer -->
-      <div class="p-4 md:p-5 flex justify-end shrink-0" style="border-top: 1px solid var(--border-secondary);">
+      <div class="p-4 md:p-5 flex items-center justify-between shrink-0" style="border-top: 1px solid var(--border-secondary);">
+        <span class="text-xs" style="color: var(--text-tertiary);">
+          {{ filteredTemplates.length }} 个模板
+        </span>
         <button
           class="premium-btn px-5 py-2 text-sm rounded-lg cursor-pointer font-medium transition-all duration-200"
           :style="{
@@ -57,6 +93,7 @@
 </template>
 
 <script setup lang="ts">
+import { ref, computed } from 'vue'
 import { ganttTemplates } from '../utils/mermaidTemplates'
 import type { GanttTemplate } from '../types'
 
@@ -68,4 +105,15 @@ defineEmits<{
   close: []
   select: [template: GanttTemplate]
 }>()
+
+const searchQuery = ref('')
+
+const filteredTemplates = computed(() => {
+  const query = searchQuery.value.trim().toLowerCase()
+  if (!query) return ganttTemplates
+  return ganttTemplates.filter(t =>
+    t.name.toLowerCase().includes(query) ||
+    t.description.toLowerCase().includes(query)
+  )
+})
 </script>
