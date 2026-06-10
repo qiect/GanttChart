@@ -12,21 +12,21 @@
       <span class="text-xs px-1.5 py-0.5 bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-300 rounded-full shrink-0">
         Mermaid
       </span>
-      <!-- 编辑模式切换 -->
+      <!-- 编辑模式切换：可视化优先 -->
       <div class="flex items-center bg-gray-100 dark:bg-gray-700 rounded-md p-0.5">
-        <button
-          class="px-2 py-1 text-xs rounded transition-colors cursor-pointer"
-          :class="editorMode === 'code' ? 'bg-white dark:bg-gray-600 shadow-sm font-medium' : 'text-gray-500 hover:text-gray-700 dark:hover:text-gray-300'"
-          @click="$emit('editorModeChange', 'code')"
-        >
-          代码
-        </button>
         <button
           class="px-2 py-1 text-xs rounded transition-colors cursor-pointer"
           :class="editorMode === 'visual' ? 'bg-white dark:bg-gray-600 shadow-sm font-medium' : 'text-gray-500 hover:text-gray-700 dark:hover:text-gray-300'"
           @click="$emit('editorModeChange', 'visual')"
         >
           可视化
+        </button>
+        <button
+          class="px-2 py-1 text-xs rounded transition-colors cursor-pointer"
+          :class="editorMode === 'code' ? 'bg-white dark:bg-gray-600 shadow-sm font-medium' : 'text-gray-500 hover:text-gray-700 dark:hover:text-gray-300'"
+          @click="$emit('editorModeChange', 'code')"
+        >
+          代码
         </button>
       </div>
     </div>
@@ -63,7 +63,7 @@
           保存
         </button>
         <div class="w-px h-5 bg-gray-200 dark:bg-gray-600 mx-0.5" />
-        <ExportMenu :chart-element="chartElement" :theme="theme" />
+        <ExportMenu :chart-element="chartElement" :theme="theme" :code="code" />
         <div class="w-px h-5 bg-gray-200 dark:bg-gray-600 mx-0.5" />
         <button
           class="px-3 py-1.5 text-sm rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors flex items-center gap-1.5 cursor-pointer"
@@ -91,7 +91,7 @@
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
           </svg>
         </button>
-        <ExportMenu :chart-element="chartElement" :theme="theme" />
+        <ExportMenu :chart-element="chartElement" :theme="theme" :code="code" />
         <button class="p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors cursor-pointer" @click="$emit('themeChange', theme === 'dark' ? 'light' : 'dark')" title="切换主题">
           <svg v-if="theme === 'dark'" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />

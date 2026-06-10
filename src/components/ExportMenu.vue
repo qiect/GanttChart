@@ -10,7 +10,11 @@
       </svg>
       <span class="hidden sm:inline">{{ isExporting ? '导出中...' : '导出' }}</span>
     </button>
-    <div v-if="isOpen" class="absolute right-0 top-full mt-1 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg z-50 min-w-[120px] md:min-w-[140px] overflow-hidden">
+    <div v-if="isOpen" class="absolute right-0 top-full mt-1 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg z-50 min-w-[140px] md:min-w-[160px] overflow-hidden">
+      <button class="w-full text-left px-3 md:px-4 py-2.5 text-sm hover:bg-blue-50 dark:hover:bg-gray-700 transition-colors cursor-pointer" @click="handleExportCode">
+        导出 Mermaid 代码
+      </button>
+      <div class="border-t border-gray-100 dark:border-gray-700"></div>
       <button class="w-full text-left px-3 md:px-4 py-2.5 text-sm hover:bg-blue-50 dark:hover:bg-gray-700 transition-colors cursor-pointer" @click="handleExport('png')">
         导出 PNG
       </button>
@@ -26,12 +30,13 @@
 
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted } from 'vue'
-import { exportChart } from '../utils/exportChart'
+import { exportChart, exportMermaidCode } from '../utils/exportChart'
 import type { ExportOptions } from '../types'
 
 const props = defineProps<{
   chartElement: HTMLElement | null
   theme: 'light' | 'dark'
+  code: string
 }>()
 
 const isOpen = ref(false)
@@ -46,6 +51,11 @@ const handleClickOutside = (e: MouseEvent) => {
 
 onMounted(() => document.addEventListener('mousedown', handleClickOutside))
 onUnmounted(() => document.removeEventListener('mousedown', handleClickOutside))
+
+const handleExportCode = () => {
+  isOpen.value = false
+  exportMermaidCode(props.code)
+}
 
 const handleExport = async (format: ExportOptions['format']) => {
   if (!props.chartElement || isExporting.value) return

@@ -38,7 +38,7 @@
             <div class="h-full flex flex-col" :class="theme === 'dark' ? 'bg-gray-900' : 'bg-white'">
               <div class="px-2 md:px-3 py-1.5 text-xs font-medium border-b"
                 :class="theme === 'dark' ? 'text-gray-400 border-gray-700 bg-gray-800/50' : 'text-gray-500 border-gray-200 bg-gray-50'">
-                预览
+                甘特图预览
               </div>
               <div class="flex-1 overflow-hidden">
                 <GanttPreview :code="debouncedCode" :theme="theme" @error-change="hasError = $event" />
@@ -77,7 +77,7 @@ const DEFAULT_CODE = ganttTemplates[0].code
 const [code, setCode] = useLocalStorage('gantt-studio-code', DEFAULT_CODE)
 const [theme, setTheme] = useLocalStorage<'light' | 'dark'>('gantt-studio-theme', 'light')
 const [, setSplitRatio] = useLocalStorage('gantt-studio-split', 0.4)
-const [editorMode, setEditorMode] = useLocalStorage<'code' | 'visual'>('gantt-studio-editor-mode', 'code')
+const [editorMode, setEditorMode] = useLocalStorage<'code' | 'visual'>('gantt-studio-editor-mode', 'visual')
 
 const isTemplateOpen = ref(false)
 const hasError = ref(false)
