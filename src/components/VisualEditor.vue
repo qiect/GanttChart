@@ -1,17 +1,6 @@
 <template>
   <div class="h-full flex flex-col" :class="theme === 'dark' ? 'bg-gray-900 text-gray-200' : 'bg-white text-gray-800'">
-    <!-- Header -->
-    <div class="px-2 md:px-3 py-1.5 text-xs font-medium border-b flex items-center justify-between"
-      :class="theme === 'dark' ? 'text-gray-400 border-gray-700 bg-gray-800/50' : 'text-gray-500 border-gray-200 bg-gray-50'">
-      <span>可视化编辑器</span>
-      <div class="flex gap-1">
-        <button @click="addSection" class="px-2 py-0.5 text-xs rounded hover:bg-blue-100 dark:hover:bg-blue-900 text-blue-600 dark:text-blue-400 cursor-pointer">
-          + 分区
-        </button>
-      </div>
-    </div>
-
-    <!-- Title & Date Format -->
+    <!-- Title & Date Format & Add Section -->
     <div class="p-2 md:p-3 border-b space-y-2" :class="theme === 'dark' ? 'border-gray-700' : 'border-gray-200'">
       <div class="flex flex-col sm:flex-row gap-2">
         <div class="flex-1">
@@ -28,6 +17,11 @@
             <option value="MM/DD/YYYY">MM/DD/YYYY</option>
             <option value="DD-MM-YYYY">DD-MM-YYYY</option>
           </select>
+        </div>
+        <div class="sm:w-auto flex items-end">
+          <button @click="addSection" class="px-3 py-1.5 text-sm rounded bg-blue-500 text-white hover:bg-blue-600 cursor-pointer transition-colors whitespace-nowrap">
+            + 分区
+          </button>
         </div>
       </div>
     </div>
