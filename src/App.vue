@@ -13,7 +13,7 @@
     />
 
     <div class="flex-1 overflow-hidden">
-      <SplitPane :default-ratio="0.4" @ratio-change="handleRatioChange">
+      <SplitPane :default-ratio="0.3" @ratio-change="handleRatioChange">
         <template #left>
           <div class="h-full flex flex-col" style="background: var(--bg-secondary);">
             <div class="px-3 md:px-4 py-2 text-xs font-medium border-b flex items-center gap-2"
@@ -88,7 +88,7 @@ const DEFAULT_CODE = ganttTemplates[0].code
 
 const [code, setCode] = useLocalStorage('gantt-studio-code', DEFAULT_CODE)
 const [theme, setTheme] = useLocalStorage<'light' | 'dark'>('gantt-studio-theme', 'light')
-const [, setSplitRatio] = useLocalStorage('gantt-studio-split', 0.4)
+const [, setSplitRatio] = useLocalStorage('gantt-studio-split', 0.3)
 const [editorMode, setEditorMode] = useLocalStorage<'code' | 'visual'>('gantt-studio-editor-mode', 'visual')
 const [chartTheme, setChartTheme] = useLocalStorage<ChartThemeId>('gantt-studio-chart-theme', 'indigo')
 

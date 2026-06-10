@@ -71,7 +71,7 @@ const props = withDefaults(defineProps<{
   minLeftWidth?: number
   minRightWidth?: number
 }>(), {
-  defaultRatio: 0.4,
+  defaultRatio: 0.3,
   minLeftWidth: 280,
   minRightWidth: 300,
 })
