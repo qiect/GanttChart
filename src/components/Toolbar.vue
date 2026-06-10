@@ -4,8 +4,35 @@
     <!-- 左侧：Logo + 模式切换 -->
     <div class="flex items-center gap-2 md:gap-3 min-w-0">
       <h1 class="text-base md:text-lg font-bold flex items-center gap-1.5 md:gap-2 shrink-0">
-        <svg class="w-5 h-5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+        <svg class="w-6 h-6" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="logo-bg" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stop-color="#4338ca"/>
+              <stop offset="50%" stop-color="#6d28d9"/>
+              <stop offset="100%" stop-color="#7c3aed"/>
+            </linearGradient>
+            <linearGradient id="logo-bar1" x1="0" y1="0" x2="1" y2="0">
+              <stop offset="0%" stop-color="#e0e7ff"/>
+              <stop offset="100%" stop-color="#c7d2fe"/>
+            </linearGradient>
+            <linearGradient id="logo-bar2" x1="0" y1="0" x2="1" y2="0">
+              <stop offset="0%" stop-color="#c7d2fe"/>
+              <stop offset="100%" stop-color="#a5b4fc"/>
+            </linearGradient>
+            <linearGradient id="logo-accent" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stop-color="#fbbf24"/>
+              <stop offset="100%" stop-color="#f59e0b"/>
+            </linearGradient>
+          </defs>
+          <rect width="48" height="48" rx="12" fill="url(#logo-bg)"/>
+          <rect x="1" y="1" width="46" height="46" rx="11" fill="none" stroke="white" stroke-opacity="0.1" stroke-width="1"/>
+          <rect x="9" y="10" width="30" height="5" rx="2.5" fill="url(#logo-bar1)"/>
+          <rect x="9" y="18.5" width="17" height="5" rx="2.5" fill="url(#logo-bar2)"/>
+          <rect x="9" y="27" width="24" height="5" rx="2.5" fill="url(#logo-bar1)"/>
+          <rect x="29" y="17.5" width="5.5" height="5.5" rx="1.2" fill="url(#logo-accent)" transform="rotate(45 31.75 20.25)"/>
+          <circle cx="9" cy="36" r="1.5" fill="#a5b4fc" opacity="0.6"/>
+          <circle cx="15" cy="36" r="1.5" fill="#a5b4fc" opacity="0.4"/>
+          <circle cx="21" cy="36" r="1.5" fill="#a5b4fc" opacity="0.3"/>
         </svg>
         <span class="hidden sm:inline">Gantt Studio</span>
       </h1>
