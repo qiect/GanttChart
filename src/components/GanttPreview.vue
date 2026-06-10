@@ -257,32 +257,96 @@ const postProcessSvg = () => {
   // 1. Ensure SVG overflow is visible so text isn't clipped
   svgEl.setAttribute('overflow', 'visible')
 
-  // 2. Set minimum width for task bars that are too narrow
+  // 2. Build a map of task rect positions for text repositioning
   const rects = svgEl.querySelectorAll('rect')
+  const rectMap = new Map<string, { x: number; y: number; width: number; height: number; el: SVGRectElement }>()
+
   rects.forEach(rect => {
     const w = parseFloat(rect.getAttribute('width') || '0')
-    // Only boost bars that exist but are too thin to see/click
-    if (w > 0 && w < 4) {
-      rect.setAttribute('width', '4')
+    const x = parseFloat(rect.getAttribute('x') || '0')
+    const y = parseFloat(rect.getAttribute('y') || '0')
+    const h = parseFloat(rect.getAttribute('height') || '0')
+
+    // Set minimum width for task bars that are too narrow
+    if (w > 0 && w < 6) {
+      rect.setAttribute('width', '6')
+    }
+
+    // Store rect info keyed by approximate y position for matching with text
+    if (w > 0 && h > 0) {
+      rectMap.set(`${Math.round(y)}`, { x, y, width: w, height: h, el: rect })
     }
   })
 
-  // 3. Remove clip-path from elements containing text to prevent text clipping
-  const clippedTexts = svgEl.querySelectorAll('text')
-  clippedTexts.forEach(textEl => {
+  // 3. Handle task text: reposition text outside narrow bars, add tooltips
+  const MIN_BAR_WIDTH_FOR_TEXT = 40 // Minimum bar width to show text inside
+  const TEXT_OFFSET_RIGHT = 6 // Gap between bar end and text start
+
+  const textElements = svgEl.querySelectorAll('text')
+  textElements.forEach(textEl => {
     const parent = textEl.parentElement
     if (parent && parent.hasAttribute('clip-path')) {
       parent.removeAttribute('clip-path')
     }
-    // Ensure text is visible
     textEl.setAttribute('overflow', 'visible')
+
+    const textY = parseFloat(textEl.getAttribute('y') || '0')
+    const textContent = textEl.textContent?.trim() || ''
+
+    // Try to find the matching rect by y-position proximity
+    let matchedRect: { x: number; y: number; width: number; height: number; el: SVGRectElement } | null = null
+    for (const [key, rectInfo] of rectMap) {
+      if (Math.abs(rectInfo.y - textY) < rectInfo.height) {
+        matchedRect = rectInfo
+        break
+      }
+    }
+
+    if (matchedRect) {
+      const barWidth = matchedRect.width
+      const barRight = matchedRect.x + barWidth
+
+      // Add tooltip title element for hover
+      const titleEl = document.createElementNS('http://www.w3.org/2000/svg', 'title')
+      titleEl.textContent = textContent
+      // Insert title as first child of the parent group or the rect
+      const targetParent = matchedRect.el.parentElement || matchedRect.el
+      targetParent.insertBefore(titleEl, targetParent.firstChild)
+
+      if (barWidth < MIN_BAR_WIDTH_FOR_TEXT && textContent) {
+        // Bar is too narrow: move text to the right of the bar
+        const currentX = parseFloat(textEl.getAttribute('x') || '0')
+        // Only reposition if text is currently inside the bar
+        if (currentX >= matchedRect.x && currentX <= barRight) {
+          textEl.setAttribute('x', String(barRight + TEXT_OFFSET_RIGHT))
+          // Change text color for outside-bar text to ensure readability
+          textEl.style.fill = 'var(--text-secondary, #555)'
+          textEl.style.fontSize = '11px'
+          textEl.style.fontWeight = '500'
+        }
+      } else if (barWidth >= MIN_BAR_WIDTH_FOR_TEXT && textContent) {
+        // Text inside bar: check if it overflows and truncate if needed
+        const textLen = textContent.length
+        const approxCharWidth = 7 // rough estimate for 12px font
+        const maxChars = Math.floor((barWidth - 8) / approxCharWidth)
+        if (textLen > maxChars && maxChars > 2) {
+          textEl.textContent = textContent.slice(0, maxChars - 1) + '…'
+        }
+      }
+
+      // Add hover class to the task group for highlight effect
+      const group = matchedRect.el.parentElement
+      if (group && group.tagName === 'g') {
+        group.classList.add('gantt-task-group')
+        group.style.cursor = 'pointer'
+      }
+    }
   })
 
   // 4. Handle very wide charts: ensure the SVG has a reasonable viewBox
   const svgWidth = parseFloat(svgEl.getAttribute('width') || '0')
   const viewBox = svgEl.getAttribute('viewBox')
   if (svgWidth > 5000 && viewBox) {
-    // Cap SVG width at 5000px and let scroll handle the rest
     svgEl.setAttribute('width', '5000')
   }
 }
@@ -311,6 +375,23 @@ watch(svg, (newSvg) => {
 
 .gantt-svg-container :deep(svg .taskText) {
   overflow: visible !important;
+}
+
+/* Hover highlight for task groups */
+.gantt-svg-container :deep(.gantt-task-group) rect {
+  transition: filter 0.15s ease, opacity 0.15s ease;
+}
+
+.gantt-svg-container :deep(.gantt-task-group:hover) rect {
+  filter: brightness(1.12);
+  stroke-width: 1.5;
+  stroke: currentColor;
+  stroke-opacity: 0.4;
+}
+
+/* Subtle scale on hover for better affordance */
+.gantt-svg-container :deep(.gantt-task-group:hover) {
+  filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.12));
 }
 
 .gantt-preview-scroll {
