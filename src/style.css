@@ -160,6 +160,66 @@ body {
   outline: none;
 }
 
+/* ── Premium Select ── */
+.premium-select-wrap {
+  position: relative;
+}
+
+.premium-select-wrap .premium-select {
+  transition: all var(--transition-fast);
+  border: 1px solid var(--border-primary);
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  appearance: none;
+  -webkit-appearance: none;
+  padding-right: 2rem;
+}
+
+.premium-select-wrap .premium-select:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-glow);
+  outline: none;
+}
+
+.premium-select-arrow {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 14px;
+  height: 14px;
+  color: var(--text-tertiary);
+  pointer-events: none;
+  transition: color var(--transition-fast);
+}
+
+.premium-select-wrap:hover .premium-select {
+  border-color: var(--accent);
+}
+
+.premium-select-wrap:hover .premium-select-arrow {
+  color: var(--accent);
+}
+
+/* ── Section Card ── */
+.section-card {
+  transition: box-shadow var(--transition-smooth);
+}
+
+.section-card:hover {
+  box-shadow: var(--shadow-md) !important;
+}
+
+/* ── Task Card ── */
+.task-card {
+  transition: all var(--transition-fast);
+}
+
+.task-card:hover {
+  border-color: var(--border-primary) !important;
+  box-shadow: var(--shadow-sm);
+}
+
 /* ── Premium Button ── */
 .premium-btn {
   transition: all var(--transition-fast);
