@@ -1,8 +1,7 @@
 <template>
-  <!-- 移动端：上下堆叠；桌面端：左右分栏 -->
   <div
-    class="h-full w-full flex"
-    :class="isMobile ? 'flex-col' : 'flex-row'"
+    class="split-pane"
+    :class="isMobile ? 'split-pane--col' : 'split-pane--row'"
     @mousemove="onMouseMove"
     @mouseup="onMouseUp"
     @mouseleave="onMouseUp"
@@ -13,36 +12,32 @@
     <!-- 左侧/上方面板 -->
     <div
       :style="isMobile ? { height: `${ratio * 100}%` } : { width: `${ratio * 100}%` }"
-      class="overflow-hidden"
-      :class="isMobile ? '' : 'h-full'"
+      class="split-pane__panel split-pane__panel--left"
     >
       <slot name="left" />
     </div>
 
-    <!-- 分割线：桌面端竖向，移动端横向。加宽拖拽区域 -->
+    <!-- 分割线 -->
     <div
       v-if="!isMobile"
-      class="relative flex-shrink-0 group"
-      style="width: 5px;"
+      class="split-pane__divider split-pane__divider--col"
       @mousedown="onMouseDown"
     >
-      <div class="absolute inset-y-0 left-1/2 -translate-x-1/2 w-1 bg-gray-300 dark:bg-gray-600 group-hover:bg-blue-400 dark:group-hover:bg-blue-500 transition-colors cursor-col-resize" />
+      <div class="split-pane__divider-line split-pane__divider-line--col" />
     </div>
     <div
       v-else
-      class="relative flex-shrink-0 group"
-      style="height: 5px;"
+      class="split-pane__divider split-pane__divider--row"
       @mousedown="onRowMouseDown"
       @touchstart="onRowTouchStart"
     >
-      <div class="absolute inset-x-0 top-1/2 -translate-y-1/2 h-1 bg-gray-300 dark:bg-gray-600 group-hover:bg-blue-400 dark:group-hover:bg-blue-500 transition-colors cursor-row-resize" />
+      <div class="split-pane__divider-line split-pane__divider-line--row" />
     </div>
 
     <!-- 右侧/下方面板 -->
     <div
       :style="isMobile ? { height: `${(1 - ratio) * 100}%` } : { width: `${(1 - ratio) * 100}%` }"
-      class="overflow-hidden"
-      :class="isMobile ? '' : 'h-full'"
+      class="split-pane__panel split-pane__panel--right"
     >
       <slot name="right" />
     </div>
@@ -139,3 +134,84 @@ const onMouseUp = () => {
   document.body.style.userSelect = ''
 }
 </script>
+
+<style scoped>
+.split-pane {
+  height: 100%;
+  width: 100%;
+  display: flex;
+}
+
+.split-pane--row {
+  flex-direction: row;
+}
+
+.split-pane--col {
+  flex-direction: column;
+}
+
+.split-pane__panel {
+  overflow: hidden;
+  min-height: 0;
+  min-width: 0;
+}
+
+.split-pane--row .split-pane__panel {
+  height: 100%;
+}
+
+/* Divider */
+.split-pane__divider {
+  position: relative;
+  flex-shrink: 0;
+  z-index: 1;
+}
+
+.split-pane__divider--col {
+  width: 5px;
+  cursor: col-resize;
+}
+
+.split-pane__divider--row {
+  height: 5px;
+  cursor: row-resize;
+}
+
+.split-pane__divider-line {
+  position: absolute;
+  transition: background 0.15s ease;
+}
+
+.split-pane__divider-line--col {
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 1px;
+  background: #e2e8f0;
+}
+
+.split-pane__divider-line--row {
+  left: 0;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  height: 1px;
+  background: #e2e8f0;
+}
+
+[data-theme="dark"] .split-pane__divider-line--col,
+[data-theme="dark"] .split-pane__divider-line--row {
+  background: #1e2538;
+}
+
+.split-pane__divider:hover .split-pane__divider-line--col,
+.split-pane__divider:hover .split-pane__divider-line--row {
+  background: #4F8CF7;
+  width: 2px;
+}
+
+.split-pane__divider:hover .split-pane__divider-line--row {
+  height: 2px;
+}
+</style>

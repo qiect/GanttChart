@@ -276,6 +276,8 @@ watch(() => props.modelValue, () => {
   display: flex;
   flex-direction: column;
   font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  min-height: 0;
+  overflow: hidden;
 }
 
 .ve--light {
@@ -436,6 +438,7 @@ watch(() => props.modelValue, () => {
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
+  min-height: 0;
 }
 
 /* Section */
