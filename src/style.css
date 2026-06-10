@@ -160,6 +160,27 @@ body {
   outline: none;
 }
 
+/* ── Date Input ── */
+.premium-input[type="date"] {
+  position: relative;
+}
+
+.premium-input[type="date"]::-webkit-calendar-picker-indicator {
+  opacity: 0.5;
+  cursor: pointer;
+  filter: var(--date-icon-filter, none);
+  transition: opacity var(--transition-fast);
+}
+
+.premium-input[type="date"]::-webkit-calendar-picker-indicator:hover {
+  opacity: 1;
+}
+
+[data-theme="dark"] .premium-input[type="date"]::-webkit-calendar-picker-indicator {
+  filter: invert(1);
+  --date-icon-filter: invert(1);
+}
+
 /* ── Premium Select (legacy, kept for compatibility) ── */
 .premium-select-wrap {
   position: relative;
