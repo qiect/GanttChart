@@ -66,12 +66,15 @@ function parseTaskLine(line: string): GanttTask | null {
 
   const dependsOn = startDate.startsWith('after ') ? startDate.replace('after ', '') : ''
 
+  // Normalize duration: Mermaid uses uppercase M for months, lowercase m for minutes
+  const normalizedDuration = duration.replace(/^(\d+)m$/, '$1M')
+
   return {
     id,
     name,
     section: '',
     startDate: dependsOn ? '' : startDate,
-    duration,
+    duration: normalizedDuration,
     status,
     dependsOn,
   }

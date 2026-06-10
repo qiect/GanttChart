@@ -257,6 +257,9 @@ const postProcessSvg = () => {
   // 1. Ensure SVG overflow is visible so text isn't clipped
   svgEl.setAttribute('overflow', 'visible')
 
+  // Determine outside-text color based on current chart theme
+  const outsideTextColor = getOutsideTextColor(props.chartTheme)
+
   // 2. Build a map of task rect positions for text repositioning
   const rects = svgEl.querySelectorAll('rect')
   const rectMap = new Map<string, { x: number; y: number; width: number; height: number; el: SVGRectElement }>()
@@ -319,10 +322,10 @@ const postProcessSvg = () => {
         // Only reposition if text is currently inside the bar
         if (currentX >= matchedRect.x && currentX <= barRight) {
           textEl.setAttribute('x', String(barRight + TEXT_OFFSET_RIGHT))
-          // Change text color for outside-bar text to ensure readability
-          textEl.style.fill = 'var(--text-secondary, #555)'
-          textEl.style.fontSize = '11px'
-          textEl.style.fontWeight = '500'
+          // Use theme-aware color for outside-bar text
+          textEl.setAttribute('fill', outsideTextColor)
+          textEl.setAttribute('font-size', '11px')
+          textEl.setAttribute('font-weight', '500')
         }
       } else if (barWidth >= MIN_BAR_WIDTH_FOR_TEXT && textContent) {
         // Text inside bar: check if it overflows and truncate if needed
@@ -349,6 +352,19 @@ const postProcessSvg = () => {
   if (svgWidth > 5000 && viewBox) {
     svgEl.setAttribute('width', '5000')
   }
+}
+
+// Get appropriate outside-text color for the current chart theme
+const getOutsideTextColor = (chartTheme: ChartThemeId): string => {
+  const themeColors: Record<ChartThemeId, string> = {
+    indigo: '#4338ca',
+    emerald: '#047857',
+    ocean: '#0369a1',
+    obsidian: '#c4b5fd',
+    amber: '#b45309',
+    slate: '#475569',
+  }
+  return themeColors[chartTheme] || '#555555'
 }
 
 watch([() => props.code, () => props.chartTheme], render, { immediate: true })

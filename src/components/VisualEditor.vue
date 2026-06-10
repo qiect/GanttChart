@@ -199,7 +199,7 @@ const durationUnitOptions = [
   { value: 'd', label: '天' },
   { value: 'h', label: '小时' },
   { value: 'w', label: '周' },
-  { value: 'm', label: '月' },
+  { value: 'M', label: '月' },
 ]
 
 const statusOptions = [
@@ -258,7 +258,7 @@ const parseCode = () => {
     taskDurationNums.value[si] = {}
     taskDurationUnits.value[si] = {}
     section.tasks.forEach((task, ti) => {
-      const match = task.duration.match(/^(\d+)([dhwm])$/)
+      const match = task.duration.match(/^(\d+)([dhwM])$/)
       if (match) {
         taskDurationNums.value[si][ti] = parseInt(match[1])
         taskDurationUnits.value[si][ti] = match[2]
