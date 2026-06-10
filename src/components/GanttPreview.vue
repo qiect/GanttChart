@@ -1,21 +1,23 @@
 <template>
   <div class="h-full w-full flex flex-col" style="background: var(--bg-secondary);">
     <!-- Toolbar -->
-    <div v-if="svg && code.trim()" class="shrink-0 flex items-center justify-between px-4 py-2 border-b"
+    <div v-if="svg && code.trim()" class="shrink-0 flex items-center justify-between px-4 py-1.5 border-b"
       style="border-color: var(--border-secondary); background: var(--bg-tertiary);">
       <!-- Left: Chart Theme Selector -->
-      <div class="flex items-center gap-1">
-        <span class="text-[11px] font-medium mr-1" style="color: var(--text-tertiary);">主题</span>
-        <div class="flex items-center gap-0.5">
+      <div class="flex items-center gap-2.5">
+        <span class="text-[10px] font-semibold tracking-widest uppercase shrink-0"
+          style="color: var(--text-tertiary); letter-spacing: 0.08em;">主题</span>
+        <div class="w-px h-3.5" style="background: var(--border-primary);"></div>
+        <div class="flex items-center gap-1">
           <button
             v-for="preset in chartThemePresets"
             :key="preset.id"
             @click="$emit('chartThemeChange', preset.id)"
-            class="px-2 py-1 text-[11px] rounded-md cursor-pointer transition-all duration-200 font-medium"
+            class="relative flex items-center gap-1.5 px-2.5 py-1 text-[11px] rounded-md cursor-pointer transition-all duration-200 font-medium"
             :style="chartTheme === preset.id ? {
-              background: 'var(--accent)',
+              background: preset.swatch,
               color: '#ffffff',
-              boxShadow: '0 2px 8px var(--accent-glow)',
+              boxShadow: `0 2px 8px ${preset.swatch}40`,
             } : {
               color: 'var(--text-tertiary)',
               background: 'transparent',
@@ -24,6 +26,8 @@
             @mouseleave="chartTheme !== preset.id && (($event.target as HTMLElement).style.background = 'transparent')"
             :title="preset.name"
           >
+            <span class="w-2 h-2 rounded-full shrink-0"
+              :style="{ background: chartTheme === preset.id ? 'rgba(255,255,255,0.6)' : preset.swatch }"></span>
             {{ preset.name }}
           </button>
         </div>
@@ -38,19 +42,29 @@
           title="缩小">
           <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4" /></svg>
         </button>
-        <div class="relative w-20 h-1.5 rounded-full cursor-pointer mx-1"
-          :style="{ background: 'var(--border-primary)' }"
-          @click="onSliderClick"
-          ref="sliderRef">
-          <div class="absolute left-0 top-0 h-full rounded-full"
-            :style="{ width: `${((zoom - 0.3) / 2.7) * 100}%`, background: 'var(--accent)' }" />
-          <div class="absolute top-1/2 -translate-y-1/2 w-3 h-3 rounded-full border-2"
+        <!-- Zoom Slider with drag support -->
+        <div
+          class="relative w-24 mx-0.5 select-none"
+          style="height: 20px; cursor: pointer;"
+          ref="sliderRef"
+          @mousedown="onSliderMouseDown"
+        >
+          <!-- Track -->
+          <div class="absolute top-1/2 left-0 right-0 -translate-y-1/2 h-[3px] rounded-full"
+            style="background: var(--border-primary);">
+            <!-- Filled portion -->
+            <div class="absolute left-0 top-0 h-full rounded-full transition-[width] duration-75"
+              :style="{ width: `${zoomRatio * 100}%`, background: 'var(--accent)' }" />
+          </div>
+          <!-- Thumb -->
+          <div class="absolute top-1/2 -translate-y-1/2 w-3.5 h-3.5 rounded-full transition-[left] duration-75"
             :style="{
-              left: `${((zoom - 0.3) / 2.7) * 100}%`,
+              left: `${zoomRatio * 100}%`,
               transform: 'translate(-50%, -50%)',
               background: 'var(--bg-elevated)',
-              borderColor: 'var(--accent)',
-              boxShadow: '0 1px 4px rgba(0,0,0,0.15)',
+              border: '2px solid var(--accent)',
+              boxShadow: isDragging ? '0 0 0 3px var(--accent-glow)' : '0 1px 3px rgba(0,0,0,0.12)',
+              transition: isDragging ? 'none' : 'left 75ms ease, box-shadow 200ms ease',
             }" />
         </div>
         <button @click="zoomIn" class="premium-btn p-1.5 rounded-md cursor-pointer transition-all duration-200"
@@ -98,7 +112,7 @@
       </div>
     </div>
 
-    <!-- SVG Container — uses CSS zoom instead of transform:scale to avoid clipping -->
+    <!-- SVG Container -->
     <div
       v-if="svg && code.trim()"
       ref="scrollContainerRef"
@@ -116,7 +130,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch, nextTick } from 'vue'
+import { ref, computed, watch, nextTick } from 'vue'
 import mermaid from 'mermaid'
 import { getMermaidConfig, chartThemePresets } from '../utils/mermaidConfig'
 import type { ChartThemeId } from '../types'
@@ -135,12 +149,16 @@ const emit = defineEmits<{
 const svg = ref('')
 const error = ref('')
 const zoom = ref(1)
+const isDragging = ref(false)
 const containerRef = ref<HTMLElement | null>(null)
 const scrollContainerRef = ref<HTMLElement | null>(null)
 const sliderRef = ref<HTMLElement | null>(null)
 
 let renderCounter = 0
 let rendering = false
+
+// Zoom ratio 0..1 for slider position
+const zoomRatio = computed(() => (zoom.value - 0.3) / 2.7)
 
 const zoomIn = () => { zoom.value = Math.min(3, Math.round((zoom.value + 0.1) * 10) / 10) }
 const zoomOut = () => { zoom.value = Math.max(0.3, Math.round((zoom.value - 0.1) * 10) / 10) }
@@ -150,20 +168,44 @@ const fitToWidth = () => {
   if (!scrollContainerRef.value || !containerRef.value) return
   const svgEl = containerRef.value.querySelector('svg')
   if (!svgEl) return
-  // Get the natural width of the SVG
   const naturalWidth = svgEl.getBoundingClientRect().width / zoom.value
-  const containerWidth = scrollContainerRef.value.clientWidth - 48 // padding
+  const containerWidth = scrollContainerRef.value.clientWidth - 48
   if (naturalWidth > 0) {
     const newZoom = containerWidth / naturalWidth
     zoom.value = Math.max(0.3, Math.min(3, Math.round(newZoom * 10) / 10))
   }
 }
 
-const onSliderClick = (e: MouseEvent) => {
+// ── Slider drag logic ──
+const updateZoomFromPointer = (clientX: number) => {
   if (!sliderRef.value) return
   const rect = sliderRef.value.getBoundingClientRect()
-  const ratio = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width))
-  zoom.value = Math.max(0.3, Math.min(3, Math.round((0.3 + ratio * 2.7) * 10) / 10))
+  const ratio = Math.max(0, Math.min(1, (clientX - rect.left) / rect.width))
+  zoom.value = Math.max(0.3, Math.min(3, Math.round((0.3 + ratio * 2.7) * 100) / 100))
+}
+
+const onSliderMouseDown = (e: MouseEvent) => {
+  e.preventDefault()
+  isDragging.value = true
+  updateZoomFromPointer(e.clientX)
+
+  const onMouseMove = (ev: MouseEvent) => {
+    if (!isDragging.value) return
+    updateZoomFromPointer(ev.clientX)
+  }
+
+  const onMouseUp = () => {
+    isDragging.value = false
+    document.removeEventListener('mousemove', onMouseMove)
+    document.removeEventListener('mouseup', onMouseUp)
+    document.body.style.cursor = ''
+    document.body.style.userSelect = ''
+  }
+
+  document.body.style.cursor = 'ew-resize'
+  document.body.style.userSelect = 'none'
+  document.addEventListener('mousemove', onMouseMove)
+  document.addEventListener('mouseup', onMouseUp)
 }
 
 // Ctrl+scroll to zoom
