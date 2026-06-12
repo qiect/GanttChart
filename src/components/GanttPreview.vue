@@ -28,7 +28,7 @@
           >
             <span class="w-2 h-2 rounded-full shrink-0"
               :style="{ background: chartTheme === preset.id ? 'rgba(255,255,255,0.6)' : preset.swatch }"></span>
-            <span class="hidden sm:inline">{{ preset.name }}</span>
+            <span class="hidden md:inline">{{ preset.name }}</span>
           </button>
         </div>
       </div>
@@ -44,7 +44,7 @@
         </button>
         <!-- Zoom Slider: hidden on very small screens -->
         <div
-          class="relative w-16 md:w-24 mx-0.5 select-none hidden sm:block"
+          class="relative w-16 md:w-24 mx-0.5 select-none hidden md:block"
           style="height: 20px; cursor: pointer;"
           ref="sliderRef"
           @mousedown="onSliderMouseDown"
@@ -83,7 +83,7 @@
           title="适应宽度">
           适应
         </button>
-        <button @click="zoomReset" class="premium-btn px-1.5 md:px-2 py-1 rounded-md cursor-pointer text-[11px] font-medium transition-all duration-200 hidden sm:inline-block"
+        <button @click="zoomReset" class="premium-btn px-1.5 md:px-2 py-1 rounded-md cursor-pointer text-[11px] font-medium transition-all duration-200 hidden md:inline-block"
           :style="{ color: 'var(--text-tertiary)' }"
           @mouseenter="($event.target as HTMLElement).style.background = 'var(--bg-secondary)'"
           @mouseleave="($event.target as HTMLElement).style.background = 'transparent'"
@@ -102,7 +102,7 @@
           @mouseleave="($event.target as HTMLElement).style.background = hasError ? 'rgba(239,68,68,0.12)' : 'rgba(16,185,129,0.12)'"
           title="手动渲染">
           <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg>
-          <span class="hidden sm:inline">渲染</span>
+          <span class="hidden md:inline">渲染</span>
         </button>
       </div>
     </div>

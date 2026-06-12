@@ -133,6 +133,7 @@ const hasError = ref(false)
 const showSaveToast = ref(false)
 const previewContainerRef = ref<HTMLElement | null>(null)
 const isMobile = ref(false)
+const isPhone = ref(false)
 const mobileTab = ref<'editor' | 'preview'>('editor')
 
 const debounceTimer = ref<ReturnType<typeof setTimeout> | null>(null)
@@ -146,7 +147,8 @@ watch(code, (newVal) => {
 }, { immediate: true })
 
 const checkMobile = () => {
-  isMobile.value = window.innerWidth < 768
+  isMobile.value = window.innerWidth < 1024
+  isPhone.value = window.innerWidth < 768
 }
 
 onMounted(() => {
