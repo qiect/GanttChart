@@ -1,7 +1,17 @@
+export type TemplateCategory = 'project' | 'business' | 'engineering' | 'tech' | 'hr' | 'education' | 'event' | 'planning'
+
+export interface TemplateCategoryInfo {
+  id: TemplateCategory
+  name: string
+  icon: string
+  color: string
+}
+
 export interface GanttTemplate {
   id: string
   name: string
   description: string
+  category: TemplateCategory
   code: string
 }
 
