@@ -176,6 +176,7 @@ const durationUnitOptions = [
   { value: 'd', label: '天' },
   { value: 'h', label: '小时' },
   { value: 'w', label: '周' },
+  { value: 'M', label: '月' },
 ]
 
 const statusOptions = [
@@ -231,7 +232,7 @@ const parseCode = () => {
     taskDurationNums.value[si] = {}
     taskDurationUnits.value[si] = {}
     section.tasks.forEach((task, ti) => {
-      const match = task.duration.match(/^(\d+)([dhw])$/)
+      const match = task.duration.match(/^(\d+)([dhwM])$/)
       if (match) {
         taskDurationNums.value[si][ti] = parseInt(match[1])
         taskDurationUnits.value[si][ti] = match[2]
@@ -283,7 +284,7 @@ const onDependsOnChange = (task: GanttTask) => {
 // When status is milestone, set duration to 0 with current unit
 const onStatusChange = (task: GanttTask) => {
   if (task.status === 'milestone') {
-    const match = task.duration.match(/^(\d+)([dhw])$/)
+    const match = task.duration.match(/^(\d+)([dhwM])$/)
     const unit = match ? match[2] : 'd'
     task.duration = `0${unit}`
   }
