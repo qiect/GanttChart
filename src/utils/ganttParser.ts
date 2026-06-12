@@ -64,8 +64,8 @@ function parseTaskLine(line: string): GanttTask | null {
   const startDate = parts[startIdx] || ''
   const duration = parts[startIdx + 1] || '1d'
 
-  // Validate duration format - only d, h, w are valid Mermaid units
-  if (!/^\d+[dhw]$/.test(duration)) {
+  // Validate duration format - d, h, w, M are valid Mermaid units
+  if (!/^\d+[dhwM]$/.test(duration)) {
     return null
   }
 
@@ -115,8 +115,8 @@ export function generateMermaidGantt(
       // Milestone: duration is always 0 with the task's current unit
       let taskDuration = task.status === 'milestone' ? task.duration.replace(/^\d+/, '0') : task.duration
 
-      // Validate duration format - only d, h, w are valid Mermaid units
-      if (!/^\d+[dhw]$/.test(taskDuration)) {
+      // Validate duration format - d, h, w, M are valid Mermaid units
+      if (!/^\d+[dhwM]$/.test(taskDuration)) {
         taskDuration = task.status === 'milestone' ? '0d' : '1d'
       }
 
