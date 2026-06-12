@@ -1,22 +1,22 @@
 <template>
-  <div v-if="isOpen" class="fixed inset-0 z-50 flex items-center justify-center p-0 md:p-6">
+  <div v-if="isOpen" class="fixed inset-0 z-50 flex items-end sm:items-center justify-center">
     <!-- Backdrop -->
     <div class="absolute inset-0 modal-backdrop" @click="$emit('close')" />
 
-    <!-- Modal -->
-    <div class="relative w-full h-full md:h-auto md:max-h-[85vh] md:max-w-[860px] overflow-hidden flex flex-col animate-scale-in"
+    <!-- Modal — 底部弹出(手机) / 居中弹窗(平板+) -->
+    <div class="relative w-full sm:max-w-[860px] overflow-hidden flex flex-col modal-container animate-slide-up sm:animate-scale-in"
       :style="{
         background: 'var(--bg-elevated)',
-        borderRadius: 'var(--radius-xl)',
-        boxShadow: '0 25px 60px rgba(0,0,0,0.15), 0 0 0 1px var(--border-primary)',
-      }">
+        borderRadius: 'var(--radius-xl) var(--radius-xl) 0 0',
+      }"
+      style="--sm-radius: var(--radius-xl);">
 
       <!-- Header -->
-      <div class="px-6 pt-6 pb-4 shrink-0">
+      <div class="px-4 sm:px-6 pt-4 sm:pt-6 pb-3 shrink-0">
         <div class="flex items-center justify-between">
           <div>
-            <h2 class="text-lg font-bold" style="color: var(--text-primary);">选择模板</h2>
-            <p class="text-xs mt-1" style="color: var(--text-tertiary);">选择一个预设模板快速开始，共 {{ ganttTemplates.length }} 个模板</p>
+            <h2 class="text-base sm:text-lg font-bold" style="color: var(--text-primary);">选择模板</h2>
+            <p class="text-[11px] sm:text-xs mt-0.5" style="color: var(--text-tertiary);">共 {{ ganttTemplates.length }} 个模板</p>
           </div>
           <button class="p-1.5 rounded-lg cursor-pointer transition-colors"
             style="color: var(--text-tertiary);"
@@ -30,7 +30,7 @@
         </div>
 
         <!-- Search -->
-        <div class="mt-3 relative">
+        <div class="mt-2.5 sm:mt-3 relative">
           <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 pointer-events-none" style="color: var(--text-tertiary);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
           </svg>
@@ -61,10 +61,35 @@
         </div>
       </div>
 
-      <!-- Body: Sidebar + Content -->
-      <div class="flex-1 overflow-hidden flex min-h-0">
-        <!-- Category Sidebar -->
-        <nav v-if="!searchQuery.trim()" class="w-44 shrink-0 overflow-y-auto py-2 px-2 hidden md:block sidebar-scroll"
+      <!-- Category Tabs — 手机/平板横向滚动，桌面端侧栏 -->
+      <div v-if="!searchQuery.trim()" class="shrink-0 lg:hidden overflow-x-auto cat-tabs-scroll"
+        style="border-top: 1px solid var(--border-secondary); border-bottom: 1px solid var(--border-secondary);">
+        <div class="flex gap-1 px-3 sm:px-4 py-2">
+          <button
+            v-for="cat in templateCategories"
+            :key="cat.id"
+            class="cat-pill shrink-0 px-3 py-1.5 rounded-full text-xs font-medium cursor-pointer transition-all duration-150 whitespace-nowrap"
+            :style="activeCategory === cat.id ? {
+              background: cat.color + '15',
+              color: cat.color,
+              border: '1px solid ' + cat.color + '30',
+            } : {
+              color: 'var(--text-tertiary)',
+              border: '1px solid var(--border-primary)',
+              background: 'transparent',
+            }"
+            @click="activeCategory = cat.id"
+          >
+            {{ cat.name }}
+          </button>
+        </div>
+      </div>
+
+      <!-- Body -->
+      <div class="flex-1 overflow-hidden flex min-h-0" style="max-height: 60vh;">
+
+        <!-- Desktop Sidebar (lg+) -->
+        <nav v-if="!searchQuery.trim()" class="w-44 shrink-0 overflow-y-auto py-2 px-2 hidden lg:block sidebar-scroll"
           style="border-right: 1px solid var(--border-secondary);">
           <button
             v-for="cat in templateCategories"
@@ -90,40 +115,19 @@
           </button>
         </nav>
 
-        <!-- Mobile Category Tabs -->
-        <div v-if="!searchQuery.trim()" class="md:hidden flex overflow-x-auto gap-1 px-4 py-2 shrink-0"
-          style="border-bottom: 1px solid var(--border-secondary); scrollbar-width: none;">
-          <button
-            v-for="cat in templateCategories"
-            :key="cat.id"
-            class="shrink-0 px-3 py-1.5 rounded-full text-xs font-medium cursor-pointer transition-all duration-150"
-            :style="activeCategory === cat.id ? {
-              background: cat.color + '15',
-              color: cat.color,
-              border: '1px solid ' + cat.color + '30',
-            } : {
-              color: 'var(--text-tertiary)',
-              border: '1px solid var(--border-primary)',
-            }"
-            @click="activeCategory = cat.id"
-          >
-            {{ cat.name }}
-          </button>
-        </div>
-
         <!-- Template Grid -->
-        <div class="flex-1 overflow-y-auto p-4 md:p-5 content-scroll">
+        <div class="flex-1 overflow-y-auto p-3 sm:p-4 lg:p-5 content-scroll">
           <!-- Category section when not searching -->
           <template v-if="!searchQuery.trim()">
-            <div class="mb-3 flex items-center gap-2">
+            <div class="mb-2.5 flex items-center gap-2">
               <span class="text-sm font-bold" :style="{ color: activeCategoryInfo.color }">{{ activeCategoryInfo.name }}</span>
               <span class="text-[10px] px-1.5 py-0.5 rounded-full font-mono" :style="{ background: activeCategoryInfo.color + '12', color: activeCategoryInfo.color }">{{ filteredTemplates.length }}</span>
             </div>
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 sm:gap-3">
               <button
                 v-for="template in filteredTemplates"
                 :key="template.id"
-                class="tmpl-card text-left p-4 rounded-xl transition-all duration-200 group cursor-pointer relative overflow-hidden"
+                class="tmpl-card text-left p-3 sm:p-4 rounded-xl transition-all duration-200 group cursor-pointer relative overflow-hidden"
                 :style="{
                   border: '1px solid var(--border-primary)',
                   background: 'var(--bg-secondary)',
@@ -133,15 +137,16 @@
                 @mouseleave="onCardLeave"
               >
                 <!-- Accent bar -->
-                <div class="absolute left-0 top-0 bottom-0 w-[3px] rounded-full transition-all duration-200 opacity-0 group-hover:opacity-100"
+                <div class="absolute left-0 top-0 bottom-0 w-[3px] rounded-full transition-all duration-200 opacity-0 group-hover:opacity-100 group-active:opacity-100"
                   :style="{ background: activeCategoryInfo.color }" />
-                <h3 class="font-semibold text-sm group-hover:translate-x-1 transition-transform duration-200" style="color: var(--text-primary);">
+                <h3 class="font-semibold text-sm group-hover:translate-x-1 group-active:translate-x-1 transition-transform duration-200" style="color: var(--text-primary);">
                   {{ template.name }}
                 </h3>
-                <p class="text-xs mt-1.5 leading-relaxed" style="color: var(--text-tertiary);">
+                <p class="text-xs mt-1 leading-relaxed" style="color: var(--text-tertiary);">
                   {{ template.description }}
                 </p>
-                <div class="mt-2.5 flex items-center gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                <!-- Hover hint (desktop) / Active hint (touch) -->
+                <div class="mt-2 flex items-center gap-1.5 opacity-0 group-hover:opacity-100 group-active:opacity-60 transition-opacity duration-200">
                   <span class="text-[10px] font-medium px-1.5 py-0.5 rounded" :style="{ background: activeCategoryInfo.color + '10', color: activeCategoryInfo.color }">使用模板</span>
                   <svg class="w-3 h-3 transition-transform duration-200 group-hover:translate-x-0.5" :style="{ color: activeCategoryInfo.color }" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7" />
@@ -160,11 +165,11 @@
                   <span class="text-sm font-bold" :style="{ color: cat.color }">{{ cat.name }}</span>
                   <span class="text-[10px] px-1.5 py-0.5 rounded-full font-mono" :style="{ background: cat.color + '12', color: cat.color }">{{ getSearchCount(cat.id) }}</span>
                 </div>
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 sm:gap-3">
                   <button
                     v-for="template in getSearchResults(cat.id)"
                     :key="template.id"
-                    class="tmpl-card text-left p-4 rounded-xl transition-all duration-200 group cursor-pointer relative overflow-hidden"
+                    class="tmpl-card text-left p-3 sm:p-4 rounded-xl transition-all duration-200 group cursor-pointer relative overflow-hidden"
                     :style="{
                       border: '1px solid var(--border-primary)',
                       background: 'var(--bg-secondary)',
@@ -173,15 +178,15 @@
                     @mouseenter="onCardEnter"
                     @mouseleave="onCardLeave"
                   >
-                    <div class="absolute left-0 top-0 bottom-0 w-[3px] rounded-full transition-all duration-200 opacity-0 group-hover:opacity-100"
+                    <div class="absolute left-0 top-0 bottom-0 w-[3px] rounded-full transition-all duration-200 opacity-0 group-hover:opacity-100 group-active:opacity-100"
                       :style="{ background: cat.color }" />
-                    <h3 class="font-semibold text-sm group-hover:translate-x-1 transition-transform duration-200" style="color: var(--text-primary);">
+                    <h3 class="font-semibold text-sm group-hover:translate-x-1 group-active:translate-x-1 transition-transform duration-200" style="color: var(--text-primary);">
                       {{ template.name }}
                     </h3>
-                    <p class="text-xs mt-1.5 leading-relaxed" style="color: var(--text-tertiary);">
+                    <p class="text-xs mt-1 leading-relaxed" style="color: var(--text-tertiary);">
                       {{ template.description }}
                     </p>
-                    <div class="mt-2.5 flex items-center gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                    <div class="mt-2 flex items-center gap-1.5 opacity-0 group-hover:opacity-100 group-active:opacity-60 transition-opacity duration-200">
                       <span class="text-[10px] font-medium px-1.5 py-0.5 rounded" :style="{ background: cat.color + '10', color: cat.color }">使用模板</span>
                       <svg class="w-3 h-3 transition-transform duration-200 group-hover:translate-x-0.5" :style="{ color: cat.color }" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7" />
@@ -191,8 +196,8 @@
                 </div>
               </div>
             </div>
-            <div v-else class="flex flex-col items-center justify-center py-16">
-              <svg class="w-12 h-12 mb-3" style="color: var(--text-tertiary); opacity: 0.4;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div v-else class="flex flex-col items-center justify-center py-12">
+              <svg class="w-10 h-10 mb-2" style="color: var(--text-tertiary); opacity: 0.35;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
               </svg>
               <p class="text-sm" style="color: var(--text-tertiary);">没有找到匹配的模板</p>
@@ -273,21 +278,59 @@ const onCardLeave = (e: MouseEvent) => {
   -webkit-backdrop-filter: blur(8px);
 }
 
+/* ── Modal Container ── */
+.modal-container {
+  max-height: 85vh;
+  box-shadow: 0 25px 60px rgba(0,0,0,0.15), 0 0 0 1px var(--border-primary);
+}
+
+@media (min-width: 640px) {
+  .modal-container {
+    border-radius: var(--radius-xl) !important;
+    max-height: 85vh;
+  }
+}
+
+/* ── Phone: bottom sheet, max 75% screen ── */
+@media (max-width: 639px) {
+  .modal-container {
+    max-height: 75vh;
+    border-radius: 20px 20px 0 0 !important;
+  }
+}
+
 .search-input::placeholder {
   color: var(--text-tertiary);
 }
 
-/* Category button */
+/* ── Category Tabs Scroll ── */
+.cat-tabs-scroll {
+  scrollbar-width: none;
+}
+.cat-tabs-scroll::-webkit-scrollbar {
+  display: none;
+}
+
+/* ── Category button ── */
 .cat-btn:hover {
   background: var(--bg-tertiary);
 }
 
-/* Template card */
+/* ── Category pill active press ── */
+.cat-pill:active {
+  transform: scale(0.95);
+}
+
+/* ── Template card ── */
 .tmpl-card:hover {
   background: var(--bg-tertiary) !important;
 }
+.tmpl-card:active {
+  transform: scale(0.98);
+  background: var(--bg-tertiary) !important;
+}
 
-/* Scrollbars */
+/* ── Scrollbars ── */
 .sidebar-scroll::-webkit-scrollbar,
 .content-scroll::-webkit-scrollbar {
   width: 4px;
@@ -306,9 +349,28 @@ const onCardLeave = (e: MouseEvent) => {
   background: var(--text-tertiary);
 }
 
-/* Animation */
-.animate-scale-in {
-  animation: scaleIn 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+/* ── Animations ── */
+/* Phone: slide up from bottom */
+.animate-slide-up {
+  animation: slideUp 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Tablet/Desktop: scale in from center */
+@media (min-width: 640px) {
+  .animate-scale-in {
+    animation: scaleIn 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
 }
 
 @keyframes scaleIn {
