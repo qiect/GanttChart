@@ -151,7 +151,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch, nextTick } from 'vue'
+import { ref, watch } from 'vue'
 import CustomSelect from './CustomSelect.vue'
 import { parseMermaidGantt, generateMermaidGantt, generateTaskId } from '../utils/ganttParser'
 import type { GanttSection, GanttTask } from '../types'
@@ -248,8 +248,8 @@ const emitCode = () => {
   isEmitting = true
   const code = generateMermaidGantt(sections.value, title.value)
   emit('update:modelValue', code)
-  // Reset flag after Vue's reactive update cycle completes
-  nextTick(() => { isEmitting = false })
+  // Reset flag after Vue's next tick
+  setTimeout(() => { isEmitting = false }, 0)
 }
 
 const getDurationNum = (si: number, ti: number): number => {
@@ -274,37 +274,19 @@ const onDurationUnitChange = (si: number, ti: number, val: string) => {
 }
 
 // When dependsOn is set, clear startDate (they're mutually exclusive in Mermaid)
-// When dependsOn is cleared, restore startDate to today as fallback
 const onDependsOnChange = (task: GanttTask) => {
   if (task.dependsOn) {
     task.startDate = ''
-  } else if (!task.startDate) {
-    // No dependency and no start date - set today as fallback
-    task.startDate = new Date().toISOString().split('T')[0]
   }
   emitCode()
 }
 
 // When status is milestone, set duration to 0 with current unit
-// When status changes from milestone, restore duration to previous value
 const onStatusChange = (task: GanttTask) => {
   if (task.status === 'milestone') {
     const match = task.duration.match(/^(\d+)([dhwM])$/)
     const unit = match ? match[2] : 'd'
     task.duration = `0${unit}`
-  } else {
-    // If duration was 0 (from milestone), restore to 1 with current unit
-    const match = task.duration.match(/^0([dhwM])$/)
-    if (match) {
-      task.duration = `1${match[1]}`
-      // Also update the tracking objects
-      for (let si = 0; si < sections.value.length; si++) {
-        const ti = sections.value[si].tasks.indexOf(task)
-        if (ti !== -1 && taskDurationNums.value[si]?.[ti] === 0) {
-          taskDurationNums.value[si][ti] = 1
-        }
-      }
-    }
   }
   emitCode()
 }

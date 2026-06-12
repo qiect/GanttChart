@@ -62,12 +62,7 @@ function parseTaskLine(line: string): GanttTask | null {
 
   const startIdx = status ? 2 : 1
   const startDate = parts[startIdx] || ''
-  let duration = parts[startIdx + 1] || '1d'
-
-  // Validate duration format - must be like 5d, 3h, 2w, 1M
-  if (!/^(\d+)([dhwM])$/.test(duration)) {
-    duration = '1d'
-  }
+  const duration = parts[startIdx + 1] || '0d'
 
   const dependsOn = startDate.startsWith('after ') ? startDate.replace('after ', '') : ''
 
@@ -112,18 +107,17 @@ export function generateMermaidGantt(
         startRef = task.startDate
       }
 
-      // Validate and fix duration: ensure it matches Mermaid format (e.g., 5d, 3h, 2w, 1M)
-      let duration = task.status === 'milestone' ? task.duration.replace(/^\d+/, '0') : task.duration
-      if (!/^(\d+)([dhwM])$/.test(duration)) {
-        duration = '1d' // Fallback to 1 day if duration is invalid
-      }
+      // Milestone: duration is always 0 with the task's current unit
+      const milestoneDuration = task.status === 'milestone' ? task.duration.replace(/^\d+/, '0') : task.duration
 
-      // Ensure startRef is never empty - use today as fallback
-      if (!startRef) {
-        startRef = new Date().toISOString().split('T')[0]
+      // Ensure we always have valid parts
+      if (startRef) {
+        lines.push(`    ${task.name}           :${statusPrefix}${task.id}, ${startRef}, ${milestoneDuration}`)
+      } else {
+        // No start date or dependency - use today as fallback
+        const today = new Date().toISOString().split('T')[0]
+        lines.push(`    ${task.name}           :${statusPrefix}${task.id}, ${today}, ${milestoneDuration}`)
       }
-
-      lines.push(`    ${task.name}           :${statusPrefix}${task.id}, ${startRef}, ${duration}`)
     }
     lines.push('')
   }
