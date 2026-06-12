@@ -53,7 +53,12 @@ function parseTaskLine(line) {
     }
     const startIdx = status ? 2 : 1;
     const startDate = parts[startIdx] || '';
-    const duration = parts[startIdx + 1] || '0d';
+    const duration = parts[startIdx + 1] || '1d';
+
+            // Validate duration format - d, h, w, M are valid Mermaid units
+            if (!/^\d+[dhwM]$/.test(duration)) {
+                return null;
+            }
     const dependsOn = startDate.startsWith('after ') ? startDate.replace('after ', '') : '';
     return {
         id,
@@ -89,16 +94,21 @@ export function generateMermaidGantt(sections, title = '项目计划', dateForma
             else if (task.startDate) {
                 startRef = task.startDate;
             }
-            // Milestone: duration is always 0d
-            const duration = task.status === 'milestone' ? '0d' : task.duration;
+            // Milestone: duration is always 0 with the task's current unit
+            let taskDuration = task.status === 'milestone' ? task.duration.replace(/^\d+/, '0') : task.duration;
+
+            // Validate duration format - d, h, w, M are valid Mermaid units
+            if (!/^\d+[dhwM]$/.test(taskDuration)) {
+                taskDuration = task.status === 'milestone' ? '0d' : '1d';
+            }
             // Ensure we always have valid parts
             if (startRef) {
-                lines.push(`    ${task.name}           :${statusPrefix}${task.id}, ${startRef}, ${duration}`);
+                lines.push(`    ${task.name}           :${statusPrefix}${task.id}, ${startRef}, ${taskDuration}`);
             }
             else {
                 // No start date or dependency - use today as fallback
                 const today = new Date().toISOString().split('T')[0];
-                lines.push(`    ${task.name}           :${statusPrefix}${task.id}, ${today}, ${duration}`);
+                lines.push(`    ${task.name}           :${statusPrefix}${task.id}, ${today}, ${taskDuration}`);
             }
         }
         lines.push('');

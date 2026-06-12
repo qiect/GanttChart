@@ -131,7 +131,7 @@
       v-if="svg && code.trim()"
       ref="scrollContainerRef"
       class="flex-1 overflow-auto gantt-preview-scroll"
-      @wheel.ctrl="onCtrlWheel"
+      @wheel="onWheel"
     >
       <div
         ref="containerRef"
@@ -225,8 +225,8 @@ const onSliderMouseDown = (e: MouseEvent) => {
   document.addEventListener('mouseup', onMouseUp)
 }
 
-// Ctrl+scroll to zoom
-const onCtrlWheel = (e: WheelEvent) => {
+// Scroll to zoom: mouse wheel zooms in/out
+const onWheel = (e: WheelEvent) => {
   e.preventDefault()
   if (e.deltaY < 0) {
     zoomIn()
@@ -239,6 +239,7 @@ const render = async () => {
   if (!props.code.trim()) {
     svg.value = ''
     error.value = ''
+    hasError.value = false
     emit('errorChange', false)
     return
   }
@@ -246,6 +247,13 @@ const render = async () => {
   if (rendering) return
   rendering = true
   const id = `mermaid-gantt-${++renderCounter}`
+
+  // Clean up any leftover mermaid render elements from previous failed renders
+  document.querySelectorAll('[id^="mermaid-gantt-"]').forEach(el => {
+    if (el.id !== id) el.remove()
+  })
+  // Also remove any d3-registered elements that mermaid may have left behind
+  document.querySelectorAll('.d3-tip, .mermaidTooltip').forEach(el => el.remove())
 
   try {
     mermaid.initialize(getMermaidConfig(props.chartTheme))
@@ -259,8 +267,12 @@ const render = async () => {
     error.value = errorMessage
     hasError.value = true
     emit('errorChange', true)
+    // Clean up the error element that mermaid creates
     const errorEl = document.getElementById(id)
     if (errorEl) errorEl.remove()
+    // Also check for elements with d3- prefix that mermaid may create on error
+    const d3ErrorEl = document.getElementById(`d3-${id}`)
+    if (d3ErrorEl) d3ErrorEl.remove()
   } finally {
     rendering = false
   }
@@ -313,7 +325,7 @@ const postProcessSvg = () => {
 
     // Try to find the matching rect by y-position proximity
     let matchedRect: { x: number; y: number; width: number; height: number; el: SVGRectElement } | null = null
-    for (const [key, rectInfo] of rectMap) {
+    for (const [, rectInfo] of rectMap) {
       if (Math.abs(rectInfo.y - textY) < rectInfo.height) {
         matchedRect = rectInfo
         break
