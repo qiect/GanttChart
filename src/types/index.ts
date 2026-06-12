@@ -1,7 +1,17 @@
+export type TemplateCategory = 'project' | 'business' | 'engineering' | 'tech' | 'hr' | 'education' | 'event' | 'planning'
+
+export interface TemplateCategoryInfo {
+  id: TemplateCategory
+  name: string
+  icon: string
+  color: string
+}
+
 export interface GanttTemplate {
   id: string
   name: string
   description: string
+  category: TemplateCategory
   code: string
 }
 
@@ -27,7 +37,7 @@ export interface GanttSection {
   tasks: GanttTask[]
 }
 
-export type ChartThemeId = 'indigo' | 'emerald' | 'ocean' | 'obsidian' | 'amber' | 'slate'
+export type ChartThemeId = 'aizuri' | 'cedar' | 'lagoon' | 'obsidian' | 'cinnabar' | 'platinum'
 
 export interface AppState {
   code: string

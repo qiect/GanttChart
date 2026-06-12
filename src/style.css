@@ -10,6 +10,7 @@
   --bg-secondary: #ffffff;
   --bg-tertiary: #f1f3f7;
   --bg-elevated: #ffffff;
+  --bg-secondary-rgb: 255, 255, 255;
   --text-primary: #1a1d26;
   --text-secondary: #5c6170;
   --text-tertiary: #8b90a0;
@@ -43,6 +44,7 @@
   --bg-secondary: #161822;
   --bg-tertiary: #1c1f2e;
   --bg-elevated: #1e2132;
+  --bg-secondary-rgb: 22, 24, 34;
   --text-primary: #e8eaf0;
   --text-secondary: #9499b0;
   --text-tertiary: #5e6380;

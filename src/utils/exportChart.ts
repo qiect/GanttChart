@@ -9,16 +9,28 @@ export async function exportChart(
 ): Promise<void> {
   const { format, quality, scale, backgroundColor } = options
 
-  switch (format) {
-    case 'png':
-      await exportAsPng(element, quality, scale, backgroundColor)
-      break
-    case 'svg':
-      await exportAsSvg(element, backgroundColor)
-      break
-    case 'pdf':
-      await exportAsPdf(element, scale, backgroundColor)
-      break
+  // Temporarily remove zoom transform for clean export
+  const originalTransform = element.style.transform
+  const originalTransformOrigin = element.style.transformOrigin
+  element.style.transform = 'none'
+  element.style.transformOrigin = 'top left'
+
+  try {
+    switch (format) {
+      case 'png':
+        await exportAsPng(element, quality, scale, backgroundColor)
+        break
+      case 'svg':
+        await exportAsSvg(element, backgroundColor)
+        break
+      case 'pdf':
+        await exportAsPdf(element, scale, backgroundColor)
+        break
+    }
+  } finally {
+    // Restore zoom transform
+    element.style.transform = originalTransform
+    element.style.transformOrigin = originalTransformOrigin
   }
 }
 
