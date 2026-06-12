@@ -1,19 +1,19 @@
 <template>
   <div class="h-full w-full flex flex-col" style="background: var(--bg-secondary);">
     <!-- Toolbar -->
-    <div class="shrink-0 flex items-center justify-between px-4 py-1.5 border-b"
+    <div class="shrink-0 flex items-center justify-between px-2 md:px-4 py-1.5 border-b"
       style="border-color: var(--border-secondary); background: var(--bg-tertiary);">
       <!-- Left: Chart Theme Selector -->
-      <div class="flex items-center gap-2.5">
-        <span class="text-[10px] font-semibold tracking-widest uppercase shrink-0"
+      <div class="flex items-center gap-1.5 md:gap-2.5 min-w-0 overflow-x-auto gantt-theme-scroll">
+        <span class="text-[10px] font-semibold tracking-widest uppercase shrink-0 hidden md:inline"
           style="color: var(--text-tertiary); letter-spacing: 0.08em;">主题</span>
-        <div class="w-px h-3.5" style="background: var(--border-primary);"></div>
-        <div class="flex items-center gap-1">
+        <div class="w-px h-3.5 shrink-0 hidden md:block" style="background: var(--border-primary);"></div>
+        <div class="flex items-center gap-0.5 md:gap-1">
           <button
             v-for="preset in chartThemePresets"
             :key="preset.id"
             @click="$emit('chartThemeChange', preset.id)"
-            class="relative flex items-center gap-1.5 px-2.5 py-1 text-[11px] rounded-md cursor-pointer transition-all duration-200 font-medium"
+            class="relative flex items-center gap-1 md:gap-1.5 px-1.5 md:px-2.5 py-1 text-[11px] rounded-md cursor-pointer transition-all duration-200 font-medium shrink-0"
             :style="chartTheme === preset.id ? {
               background: preset.swatch,
               color: '#ffffff',
@@ -28,23 +28,23 @@
           >
             <span class="w-2 h-2 rounded-full shrink-0"
               :style="{ background: chartTheme === preset.id ? 'rgba(255,255,255,0.6)' : preset.swatch }"></span>
-            {{ preset.name }}
+            <span class="hidden sm:inline">{{ preset.name }}</span>
           </button>
         </div>
       </div>
 
       <!-- Right: Zoom Controls + Render Button -->
-      <div class="flex items-center gap-1">
-        <button @click="zoomOut" class="premium-btn p-1.5 rounded-md cursor-pointer transition-all duration-200"
+      <div class="flex items-center gap-0.5 md:gap-1 shrink-0">
+        <button @click="zoomOut" class="premium-btn p-1.5 md:p-1.5 rounded-md cursor-pointer transition-all duration-200"
           :style="{ color: 'var(--text-tertiary)' }"
           @mouseenter="($event.target as HTMLElement).style.background = 'var(--bg-secondary)'"
           @mouseleave="($event.target as HTMLElement).style.background = 'transparent'"
           title="缩小">
           <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4" /></svg>
         </button>
-        <!-- Zoom Slider with drag support -->
+        <!-- Zoom Slider: hidden on very small screens -->
         <div
-          class="relative w-24 mx-0.5 select-none"
+          class="relative w-16 md:w-24 mx-0.5 select-none hidden sm:block"
           style="height: 20px; cursor: pointer;"
           ref="sliderRef"
           @mousedown="onSliderMouseDown"
@@ -67,7 +67,7 @@
               transition: isDragging ? 'none' : 'left 75ms ease, box-shadow 200ms ease',
             }" />
         </div>
-        <button @click="zoomIn" class="premium-btn p-1.5 rounded-md cursor-pointer transition-all duration-200"
+        <button @click="zoomIn" class="premium-btn p-1.5 md:p-1.5 rounded-md cursor-pointer transition-all duration-200"
           :style="{ color: 'var(--text-tertiary)' }"
           @mouseenter="($event.target as HTMLElement).style.background = 'var(--bg-secondary)'"
           @mouseleave="($event.target as HTMLElement).style.background = 'transparent'"
@@ -75,24 +75,24 @@
           <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" /></svg>
         </button>
         <span class="text-[11px] min-w-[2.5rem] text-center font-mono font-medium" style="color: var(--text-tertiary);">{{ Math.round(zoom * 100) }}%</span>
-        <div class="w-px h-4 mx-1" :style="{ background: 'var(--border-primary)' }" />
-        <button @click="fitToWidth" class="premium-btn px-2 py-1 rounded-md cursor-pointer text-[11px] font-medium transition-all duration-200"
+        <div class="w-px h-4 mx-0.5 md:mx-1" :style="{ background: 'var(--border-primary)' }" />
+        <button @click="fitToWidth" class="premium-btn px-1.5 md:px-2 py-1 rounded-md cursor-pointer text-[11px] font-medium transition-all duration-200"
           :style="{ color: 'var(--text-tertiary)' }"
           @mouseenter="($event.target as HTMLElement).style.background = 'var(--bg-secondary)'"
           @mouseleave="($event.target as HTMLElement).style.background = 'transparent'"
           title="适应宽度">
           适应
         </button>
-        <button @click="zoomReset" class="premium-btn px-2 py-1 rounded-md cursor-pointer text-[11px] font-medium transition-all duration-200"
+        <button @click="zoomReset" class="premium-btn px-1.5 md:px-2 py-1 rounded-md cursor-pointer text-[11px] font-medium transition-all duration-200 hidden sm:inline-block"
           :style="{ color: 'var(--text-tertiary)' }"
           @mouseenter="($event.target as HTMLElement).style.background = 'var(--bg-secondary)'"
           @mouseleave="($event.target as HTMLElement).style.background = 'transparent'"
           title="重置缩放">
           重置
         </button>
-        <div class="w-px h-4 mx-1" :style="{ background: 'var(--border-primary)' }" />
+        <div class="w-px h-4 mx-0.5 md:mx-1" :style="{ background: 'var(--border-primary)' }" />
         <!-- Manual Render Button -->
-        <button @click="render" class="premium-btn px-2.5 py-1.5 rounded-md cursor-pointer text-[11px] font-medium transition-all duration-200 flex items-center gap-1"
+        <button @click="render" class="premium-btn px-2 md:px-2.5 py-1 md:py-1.5 rounded-md cursor-pointer text-[11px] font-medium transition-all duration-200 flex items-center gap-1"
           :style="{
             background: hasError ? 'rgba(239,68,68,0.12)' : 'rgba(16,185,129,0.12)',
             color: hasError ? 'var(--error)' : 'var(--success)',
@@ -102,7 +102,7 @@
           @mouseleave="($event.target as HTMLElement).style.background = hasError ? 'rgba(239,68,68,0.12)' : 'rgba(16,185,129,0.12)'"
           title="手动渲染">
           <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg>
-          渲染
+          <span class="hidden sm:inline">渲染</span>
         </button>
       </div>
     </div>
@@ -453,5 +453,14 @@ watch(svg, (newSvg) => {
 
 .gantt-preview-scroll {
   scrollbar-width: thin;
+}
+
+.gantt-theme-scroll {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.gantt-theme-scroll::-webkit-scrollbar {
+  display: none;
 }
 </style>

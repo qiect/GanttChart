@@ -5,14 +5,17 @@
       :theme="theme"
       :chart-element="chartElement"
       :editor-mode="editorMode"
+      :mobile-tab="mobileTab"
       @code-change="handleCodeChange"
       @theme-change="handleThemeChange"
       @open-template="isTemplateOpen = true"
       @editor-mode-change="handleEditorModeChange"
       @save="handleSave"
+      @mobile-tab-change="handleMobileTabChange"
     />
 
-    <div class="flex-1 overflow-hidden">
+    <!-- 桌面端：分屏布局 -->
+    <div v-if="!isMobile" class="flex-1 overflow-hidden">
       <SplitPane :default-ratio="0.3" @ratio-change="handleRatioChange">
         <template #left>
           <div class="h-full flex flex-col" style="background: var(--bg-secondary);">
@@ -58,6 +61,39 @@
       </SplitPane>
     </div>
 
+    <!-- 移动端：Tab 全屏切换 -->
+    <div v-else class="flex-1 overflow-hidden">
+      <!-- 编辑器 Tab -->
+      <div v-show="mobileTab === 'editor'" class="h-full flex flex-col" style="background: var(--bg-secondary);">
+        <div class="flex-1 overflow-hidden">
+          <MermaidEditor
+            v-if="editorMode === 'code'"
+            v-model="code"
+            :theme="theme"
+          />
+          <VisualEditor
+            v-else
+            v-model="code"
+            :theme="theme"
+          />
+        </div>
+      </div>
+      <!-- 预览 Tab -->
+      <div v-show="mobileTab === 'preview'" class="h-full">
+        <div ref="previewContainerRef" class="h-full flex flex-col" style="background: var(--bg-secondary);">
+          <div class="flex-1 overflow-hidden">
+            <GanttPreview
+              :code="debouncedCode"
+              :theme="theme"
+              :chart-theme="chartTheme"
+              @error-change="hasError = $event"
+              @chart-theme-change="handleChartThemeChange"
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+
     <StatusBar :code="code" :has-error="hasError" :theme="theme" />
 
     <TemplateModal
@@ -71,7 +107,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch, onMounted } from 'vue'
+import { ref, computed, watch, onMounted, onUnmounted } from 'vue'
 import SplitPane from './components/SplitPane.vue'
 import MermaidEditor from './components/MermaidEditor.vue'
 import VisualEditor from './components/VisualEditor.vue'
@@ -96,6 +132,8 @@ const isTemplateOpen = ref(false)
 const hasError = ref(false)
 const showSaveToast = ref(false)
 const previewContainerRef = ref<HTMLElement | null>(null)
+const isMobile = ref(false)
+const mobileTab = ref<'editor' | 'preview'>('editor')
 
 const debounceTimer = ref<ReturnType<typeof setTimeout> | null>(null)
 const debouncedCode = ref(code.value)
@@ -106,6 +144,20 @@ watch(code, (newVal) => {
     debouncedCode.value = newVal
   }, 300)
 }, { immediate: true })
+
+const checkMobile = () => {
+  isMobile.value = window.innerWidth < 768
+}
+
+onMounted(() => {
+  checkMobile()
+  window.addEventListener('resize', checkMobile)
+  document.documentElement.setAttribute('data-theme', theme.value)
+})
+
+onUnmounted(() => {
+  window.removeEventListener('resize', checkMobile)
+})
 
 // Get chart element for export - search more broadly
 const chartElement = computed(() => {
@@ -138,8 +190,11 @@ const handleChartThemeChange = (newChartTheme: ChartThemeId) => {
   setChartTheme(newChartTheme)
 }
 
+const handleMobileTabChange = (tab: 'editor' | 'preview') => {
+  mobileTab.value = tab
+}
+
 const handleSave = () => {
-  // 显式写入 localStorage（useLocalStorage 已自动持久化，此处确保覆盖并提示）
   try {
     window.localStorage.setItem('gantt-studio-code', JSON.stringify(code.value))
     window.localStorage.setItem('gantt-studio-theme', JSON.stringify(theme.value))
@@ -157,9 +212,9 @@ const handleSave = () => {
 const handleTemplateSelect = (template: GanttTemplate) => {
   setCode(template.code)
   isTemplateOpen.value = false
+  // 选择模板后自动切到预览
+  if (isMobile.value) {
+    mobileTab.value = 'preview'
+  }
 }
-
-onMounted(() => {
-  document.documentElement.setAttribute('data-theme', theme.value)
-})
 </script>

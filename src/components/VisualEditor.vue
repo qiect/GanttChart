@@ -1,9 +1,9 @@
 <template>
   <div class="h-full flex flex-col" style="background: var(--bg-secondary); color: var(--text-primary);">
     <!-- Title & Add Section -->
-    <div class="shrink-0 flex items-center gap-2 px-4 py-1.5 border-b" style="border-color: var(--border-primary); background: var(--bg-tertiary);">
-      <input v-model="title" @input="emitCode" class="premium-input flex-1 min-w-0 px-2.5 py-1.5 text-[11px] rounded-md outline-none" />
-      <button @click="addSection" class="premium-btn px-2.5 py-1.5 text-[11px] rounded-md cursor-pointer font-medium flex items-center gap-1 shrink-0"
+    <div class="shrink-0 flex items-center gap-2 px-3 md:px-4 py-2 border-b" style="border-color: var(--border-primary); background: var(--bg-tertiary);">
+      <input v-model="title" @input="emitCode" class="premium-input flex-1 min-w-0 px-2.5 py-1.5 text-xs md:text-[11px] rounded-md outline-none" />
+      <button @click="addSection" class="premium-btn px-3 md:px-2.5 py-2 md:py-1.5 text-xs md:text-[11px] rounded-md cursor-pointer font-medium flex items-center gap-1 shrink-0"
         :style="{
           background: 'var(--accent)',
           color: '#ffffff',
@@ -11,7 +11,7 @@
         }"
         @mouseenter="($event.target as HTMLElement).style.background = 'var(--accent-hover)'; ($event.target as HTMLElement).style.boxShadow = '0 4px 16px var(--accent-glow)'"
         @mouseleave="($event.target as HTMLElement).style.background = 'var(--accent)'; ($event.target as HTMLElement).style.boxShadow = '0 2px 8px var(--accent-glow)'">
-        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/></svg>
+        <svg class="w-3.5 h-3.5 md:w-3 md:h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/></svg>
         分区
       </button>
     </div>
@@ -25,11 +25,11 @@
           boxShadow: 'var(--shadow-sm)',
         }">
         <!-- Section Header -->
-        <div class="section-header flex items-center gap-2 px-3 md:px-4 py-2.5 cursor-pointer select-none"
+        <div class="section-header flex items-center gap-1.5 md:gap-2 px-3 md:px-4 py-2.5 cursor-pointer select-none"
           :style="{ background: 'var(--bg-tertiary)' }"
           @click="toggleSection(si)">
           <div class="w-1 h-4 rounded-full shrink-0" :style="{ background: 'var(--accent)' }"></div>
-          <input v-model="section.name" @input="emitCode" @click.stop class="flex-1 min-w-0 px-2 py-0.5 text-sm font-semibold bg-transparent focus:outline-none rounded-md"
+          <input v-model="section.name" @input="emitCode" @click.stop class="flex-1 min-w-0 px-2 py-1 text-sm font-semibold bg-transparent focus:outline-none rounded-md"
             :style="{ color: 'var(--text-primary)' }" />
           <span class="text-[10px] font-medium px-1.5 py-0.5 rounded-md shrink-0"
             :style="{ background: 'var(--accent-subtle)', color: 'var(--accent)' }">
@@ -40,7 +40,7 @@
             fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
           </svg>
-          <button @click.stop="addTask(si)" class="premium-btn px-2.5 py-1 text-xs rounded-lg cursor-pointer font-medium shrink-0 flex items-center gap-1"
+          <button @click.stop="addTask(si)" class="premium-btn px-2.5 md:px-2.5 py-1.5 md:py-1 text-xs rounded-lg cursor-pointer font-medium shrink-0 flex items-center gap-1"
             :style="{
               background: 'var(--accent-subtle)',
               color: 'var(--accent)',
@@ -48,9 +48,9 @@
             @mouseenter="($event.target as HTMLElement).style.background = 'var(--accent)'; ($event.target as HTMLElement).style.color = '#ffffff'"
             @mouseleave="($event.target as HTMLElement).style.background = 'var(--accent-subtle)'; ($event.target as HTMLElement).style.color = 'var(--accent)'">
             <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/></svg>
-            任务
+            <span class="md:hidden">添加</span><span class="hidden md:inline">任务</span>
           </button>
-          <button @click.stop="removeSection(si)" class="premium-btn p-1.5 rounded-lg shrink-0 cursor-pointer transition-colors duration-200"
+          <button @click.stop="removeSection(si)" class="premium-btn p-2 md:p-1.5 rounded-lg shrink-0 cursor-pointer transition-colors duration-200"
             :style="{ color: 'var(--text-tertiary)' }"
             @mouseenter="($event.target as HTMLElement).style.color = 'var(--error)'; ($event.target as HTMLElement).style.background = 'rgba(239,68,68,0.08)'"
             @mouseleave="($event.target as HTMLElement).style.color = 'var(--text-tertiary)'; ($event.target as HTMLElement).style.background = 'transparent'">
@@ -122,7 +122,7 @@
                       @change="onStatusChange(si, ti, task)"
                     />
                   </div>
-                  <button @click="removeTask(si, ti)" class="premium-btn p-1.5 rounded-lg shrink-0 cursor-pointer transition-colors duration-200"
+                  <button @click="removeTask(si, ti)" class="premium-btn p-2 md:p-1.5 rounded-lg shrink-0 cursor-pointer transition-colors duration-200"
                     :style="{
                       color: 'var(--text-tertiary)',
                       border: '1px solid var(--border-primary)',
