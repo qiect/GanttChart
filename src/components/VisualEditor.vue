@@ -78,7 +78,7 @@
                              task.status === 'milestone' ? 'var(--warning)' :
                              'var(--border-primary)'
                 }"></div>
-              <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 pl-2">
+              <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-3 gap-y-2 pl-2">
                 <div>
                   <label class="text-[10px] font-semibold block mb-1 tracking-widest uppercase" style="color: var(--text-tertiary); letter-spacing: 0.08em;">任务名称</label>
                   <input v-model="task.name" @input="emitCode" class="premium-input w-full px-3 py-1.5 text-sm rounded-lg outline-none" />
@@ -93,10 +93,10 @@
                 </div>
                 <div>
                   <label class="text-[10px] font-semibold block mb-1 tracking-widest uppercase" style="color: var(--text-tertiary); letter-spacing: 0.08em;">工期</label>
-                  <div class="flex gap-1.5">
+                  <div class="flex gap-1.5 items-center">
                     <input :value="getDurationNum(si, ti)" @input="onDurationNumInput(si, ti, ($event.target as HTMLInputElement).value)" type="number" min="0"
-                      class="premium-input w-20 sm:w-16 px-3 py-1.5 text-sm rounded-lg outline-none" />
-                    <div class="flex-1">
+                      class="premium-input w-16 px-2 py-1.5 text-sm rounded-lg outline-none text-center" />
+                    <div class="flex-1 min-w-0">
                       <CustomSelect
                         :model-value="taskDurationUnits[si]?.[ti] ?? 'd'"
                         :options="durationUnitOptions"
@@ -114,7 +114,7 @@
                   />
                 </div>
                 <div class="flex items-end gap-1.5">
-                  <div class="flex-1">
+                  <div class="flex-1 min-w-0">
                     <label class="text-[10px] font-semibold block mb-1 tracking-widest uppercase" style="color: var(--text-tertiary); letter-spacing: 0.08em;">状态</label>
                     <CustomSelect
                       v-model="task.status"
@@ -122,7 +122,7 @@
                       @change="onStatusChange(si, ti, task)"
                     />
                   </div>
-                  <button @click="removeTask(si, ti)" class="premium-btn p-2 md:p-1.5 rounded-lg shrink-0 cursor-pointer transition-colors duration-200"
+                  <button @click="removeTask(si, ti)" class="premium-btn p-2 md:p-1.5 rounded-lg shrink-0 cursor-pointer transition-colors duration-0"
                     :style="{
                       color: 'var(--text-tertiary)',
                       border: '1px solid var(--border-primary)',

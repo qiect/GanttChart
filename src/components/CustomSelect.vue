@@ -1,5 +1,5 @@
 <template>
-  <div class="custom-select" ref="selectRef">
+  <div class="custom-select min-w-0" ref="selectRef">
     <button
       type="button"
       class="custom-select-trigger w-full flex items-center justify-between px-3 py-1.5 text-sm rounded-lg cursor-pointer text-left"
