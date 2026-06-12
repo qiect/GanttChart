@@ -131,7 +131,7 @@
       v-if="svg && code.trim()"
       ref="scrollContainerRef"
       class="flex-1 overflow-auto gantt-preview-scroll"
-      @wheel.ctrl="onCtrlWheel"
+      @wheel="onWheel"
     >
       <div
         ref="containerRef"
@@ -225,8 +225,8 @@ const onSliderMouseDown = (e: MouseEvent) => {
   document.addEventListener('mouseup', onMouseUp)
 }
 
-// Ctrl+scroll to zoom
-const onCtrlWheel = (e: WheelEvent) => {
+// Scroll to zoom: mouse wheel zooms in/out
+const onWheel = (e: WheelEvent) => {
   e.preventDefault()
   if (e.deltaY < 0) {
     zoomIn()
