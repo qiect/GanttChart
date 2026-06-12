@@ -5,6 +5,7 @@ export function parseMermaidGantt(code) {
     const lines = code.split('\n');
     const sections = [];
     let currentSection = null;
+    const existingIds = [];
     for (const line of lines) {
         const trimmed = line.trim();
         if (trimmed.startsWith('title ') || trimmed.startsWith('dateFormat ') || trimmed.startsWith('axisFormat ')) {
@@ -19,15 +20,16 @@ export function parseMermaidGantt(code) {
             continue;
         // Parse task line: name :status, id, start, duration
         if (currentSection) {
-            const task = parseTaskLine(trimmed);
+            const task = parseTaskLine(trimmed, existingIds);
             if (task) {
+                existingIds.push(task.id);
                 currentSection.tasks.push(task);
             }
         }
     }
     return sections;
 }
-function parseTaskLine(line) {
+function parseTaskLine(line, existingIds = []) {
     const colonIdx = line.indexOf(':');
     if (colonIdx === -1)
         return null;
@@ -39,21 +41,30 @@ function parseTaskLine(line) {
     let status = '';
     let idPart = parts[0];
     let id = '';
+    let startIdx = 1;
+    // Helper: check if a part looks like a dependency or date (not an ID)
+    const isStartRef = (s) => s.startsWith('after ') || /^\d{4}-\d{2}-\d{2}$/.test(s);
     // Check for status modifiers (milestone, active, done, crit)
-    if (idPart === 'milestone') {
-        status = 'milestone';
-        id = parts[1];
-    }
-    else if (idPart === 'active' || idPart === 'done' || idPart === 'crit') {
+    if (idPart === 'milestone' || idPart === 'active' || idPart === 'done' || idPart === 'crit') {
         status = idPart;
-        id = parts[1];
+        // Check if parts[1] is a dependency/date (meaning no explicit ID)
+        const secondPart = parts[1] || '';
+        if (isStartRef(secondPart)) {
+            // No explicit ID - generate one
+            id = generateTaskId(existingIds);
+            startIdx = 1;
+        }
+        else {
+            id = secondPart;
+            startIdx = 2;
+        }
     }
     else {
         id = idPart;
+        startIdx = 1;
     }
-    const startIdx = status ? 2 : 1;
     const startDate = parts[startIdx] || '';
-    const duration = parts[startIdx + 1] || '1d';
+    const duration = parts[startIdx + 1] || (status === 'milestone' ? '0d' : '1d');
 
             // Validate duration format - d, h, w, M are valid Mermaid units
             if (!/^\d+[dhwM]$/.test(duration)) {
