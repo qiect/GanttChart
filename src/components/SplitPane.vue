@@ -32,6 +32,17 @@
           width: isDragging ? '2px' : '1px',
           boxShadow: isDragging ? '0 0 8px var(--accent-glow)' : 'none',
         }" />
+      <!-- Drag handle dots -->
+      <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[18px] h-[32px] rounded-full flex flex-col items-center justify-center gap-[3px] opacity-0 group-hover:opacity-100 transition-opacity duration-200"
+        :style="{
+          background: isDragging ? 'var(--accent)' : 'var(--bg-elevated)',
+          border: isDragging ? '1px solid var(--accent)' : '1px solid var(--border-primary)',
+          boxShadow: isDragging ? '0 0 12px var(--accent-glow)' : 'var(--shadow-md)',
+        }">
+        <span class="w-[3px] h-[3px] rounded-full" :style="{ background: isDragging ? 'rgba(255,255,255,0.8)' : 'var(--text-tertiary)' }"></span>
+        <span class="w-[3px] h-[3px] rounded-full" :style="{ background: isDragging ? 'rgba(255,255,255,0.8)' : 'var(--text-tertiary)' }"></span>
+        <span class="w-[3px] h-[3px] rounded-full" :style="{ background: isDragging ? 'rgba(255,255,255,0.8)' : 'var(--text-tertiary)' }"></span>
+      </div>
       <!-- Invisible wider hit area -->
       <div class="absolute inset-y-0 -left-2 w-5 cursor-col-resize" />
     </div>

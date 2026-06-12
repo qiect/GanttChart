@@ -158,6 +158,36 @@ body {
   .hover-effect:hover {
     opacity: 0.85;
   }
+
+  /* Smooth hover lift for section cards */
+  .section-card:hover {
+    transform: translateY(-1px);
+  }
+
+  /* Task card subtle border highlight */
+  .task-card:hover {
+    border-color: var(--accent) !important;
+  }
+}
+
+/* ── Focus Visible ── */
+.premium-btn:focus-visible,
+.premium-input:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* ── Keyboard shortcut kbd styling ── */
+kbd {
+  font-family: 'JetBrains Mono', 'Fira Code', monospace;
+  font-size: 0.75em;
+  line-height: 1;
+  padding: 2px 4px;
+  border-radius: 3px;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-primary);
+  color: var(--text-tertiary);
+  box-shadow: 0 1px 0 var(--border-primary);
 }
 
 /* ── CodeMirror Editor ── */

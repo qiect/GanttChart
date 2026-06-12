@@ -15,6 +15,17 @@
         <span class="w-1.5 h-1.5 rounded-full pulse-dot" style="background: var(--success);" />
         <span class="hidden sm:inline">渲染成功</span>
       </span>
+      <!-- 桌面端快捷键提示 -->
+      <div class="hidden lg:flex items-center gap-3 ml-2" style="color: var(--text-tertiary); opacity: 0.6;">
+        <span class="flex items-center gap-1">
+          <kbd class="px-1 py-0.5 rounded text-[9px] font-mono" :style="{ background: 'var(--bg-secondary)', border: '1px solid var(--border-primary)' }">Ctrl+S</kbd>
+          保存
+        </span>
+        <span class="flex items-center gap-1">
+          <kbd class="px-1 py-0.5 rounded text-[9px] font-mono" :style="{ background: 'var(--bg-secondary)', border: '1px solid var(--border-primary)' }">Ctrl+T</kbd>
+          模板
+        </span>
+      </div>
     </div>
     <div class="flex items-center gap-3 md:gap-5 shrink-0" style="color: var(--text-tertiary);">
       <span>行 {{ lineCount }}</span>
