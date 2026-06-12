@@ -53,7 +53,11 @@ function parseTaskLine(line) {
     }
     const startIdx = status ? 2 : 1;
     const startDate = parts[startIdx] || '';
-    const duration = parts[startIdx + 1] || '0d';
+    let duration = parts[startIdx + 1] || '1d';
+    // Validate duration format - must be like 5d, 3h, 2w, 1M
+    if (!/^(\d+)([dhwM])$/.test(duration)) {
+        duration = '1d';
+    }
     const dependsOn = startDate.startsWith('after ') ? startDate.replace('after ', '') : '';
     return {
         id,
@@ -89,17 +93,16 @@ export function generateMermaidGantt(sections, title = '项目计划', dateForma
             else if (task.startDate) {
                 startRef = task.startDate;
             }
-            // Milestone: duration is always 0 with the task's current unit
-            const milestoneDuration = task.status === 'milestone' ? task.duration.replace(/^\d+/, '0') : task.duration;
-            // Ensure we always have valid parts
-            if (startRef) {
-                lines.push(`    ${task.name}           :${statusPrefix}${task.id}, ${startRef}, ${milestoneDuration}`);
+            // Validate and fix duration: ensure it matches Mermaid format (e.g., 5d, 3h, 2w, 1M)
+            let duration = task.status === 'milestone' ? task.duration.replace(/^\d+/, '0') : task.duration;
+            if (!/^(\d+)([dhwM])$/.test(duration)) {
+                duration = '1d'; // Fallback to 1 day if duration is invalid
             }
-            else {
-                // No start date or dependency - use today as fallback
-                const today = new Date().toISOString().split('T')[0];
-                lines.push(`    ${task.name}           :${statusPrefix}${task.id}, ${today}, ${milestoneDuration}`);
+            // Ensure startRef is never empty - use today as fallback
+            if (!startRef) {
+                startRef = new Date().toISOString().split('T')[0];
             }
+            lines.push(`    ${task.name}           :${statusPrefix}${task.id}, ${startRef}, ${duration}`);
         }
         lines.push('');
     }
