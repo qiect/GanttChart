@@ -126,7 +126,7 @@
                     <CustomSelect
                       v-model="task.status"
                       :options="statusOptions"
-                      @change="onStatusChange(task)"
+                      @change="onStatusChange(si, ti, task)"
                     />
                   </div>
                   <button @click="removeTask(si, ti)" class="premium-btn p-1.5 rounded-lg shrink-0 cursor-pointer transition-colors duration-200"
@@ -176,6 +176,7 @@ const title = ref('项目计划')
 const sections = ref<GanttSection[]>([])
 const taskDurationNums = ref<Record<number, Record<number, number>>>({})
 const taskDurationUnits = ref<Record<number, Record<number, string>>>({})
+const savedDurationNums = ref<Record<number, Record<number, number>>>({})
 const collapsedSections = ref<Set<number>>(new Set())
 
 // Select options
@@ -281,17 +282,42 @@ const onDurationUnitChange = (si: number, ti: number, val: string) => {
 }
 
 // When dependsOn is set, clear startDate (they're mutually exclusive in Mermaid)
+// When dependsOn is cleared, restore startDate to today
 const onDependsOnChange = (task: GanttTask) => {
   if (task.dependsOn) {
     task.startDate = ''
+  } else {
+    task.startDate = new Date().toISOString().split('T')[0]
   }
   emitCode()
 }
 
-// When status is milestone, set duration to 0d
-const onStatusChange = (task: GanttTask) => {
+// When status is milestone, save and override duration to 0d
+// When status changes away from milestone, restore saved duration
+const onStatusChange = (si: number, ti: number, task: GanttTask) => {
   if (task.status === 'milestone') {
+    // Save current duration number before overriding
+    if (!savedDurationNums.value[si]) savedDurationNums.value[si] = {}
+    savedDurationNums.value[si][ti] = taskDurationNums.value[si]?.[ti] ?? 0
+    // Override duration for milestone
     task.duration = '0d'
+    if (!taskDurationNums.value[si]) taskDurationNums.value[si] = {}
+    taskDurationNums.value[si][ti] = 0
+  } else {
+    // Restore saved duration when changing away from milestone
+    const savedNum = savedDurationNums.value[si]?.[ti]
+    if (savedNum !== undefined && savedNum > 0) {
+      const unit = taskDurationUnits.value[si]?.[ti] ?? 'd'
+      task.duration = `${savedNum}${unit}`
+      if (!taskDurationNums.value[si]) taskDurationNums.value[si] = {}
+      taskDurationNums.value[si][ti] = savedNum
+      delete savedDurationNums.value[si][ti]
+    } else if (task.duration === '0d') {
+      // No saved value but duration is still 0d — set a sensible default
+      task.duration = '1d'
+      if (!taskDurationNums.value[si]) taskDurationNums.value[si] = {}
+      taskDurationNums.value[si][ti] = 1
+    }
   }
   emitCode()
 }
