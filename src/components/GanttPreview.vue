@@ -1,7 +1,7 @@
 <template>
   <div class="h-full w-full flex flex-col" style="background: var(--bg-secondary);">
     <!-- Toolbar -->
-    <div v-if="svg && code.trim()" class="shrink-0 flex items-center justify-between px-4 py-1.5 border-b"
+    <div class="shrink-0 flex items-center justify-between px-4 py-1.5 border-b"
       style="border-color: var(--border-secondary); background: var(--bg-tertiary);">
       <!-- Left: Chart Theme Selector -->
       <div class="flex items-center gap-2.5">
@@ -33,7 +33,20 @@
         </div>
       </div>
 
-      <!-- Right: Zoom Controls -->
+      <!-- Center: Date Format -->
+      <div class="flex items-center gap-2">
+        <div class="w-px h-3.5" style="background: var(--border-primary);"></div>
+        <span class="text-[10px] font-semibold tracking-widest uppercase shrink-0"
+          style="color: var(--text-tertiary); letter-spacing: 0.08em;">日期</span>
+        <CustomSelect
+          :model-value="dateFormat"
+          :options="dateFormatOptions"
+          @update:model-value="onDateFormatChange"
+          class="w-28"
+        />
+      </div>
+
+      <!-- Right: Zoom Controls + Render Button -->
       <div class="flex items-center gap-1">
         <button @click="zoomOut" class="premium-btn p-1.5 rounded-md cursor-pointer transition-all duration-200"
           :style="{ color: 'var(--text-tertiary)' }"
@@ -90,6 +103,20 @@
           title="重置缩放">
           重置
         </button>
+        <div class="w-px h-4 mx-1" :style="{ background: 'var(--border-primary)' }" />
+        <!-- Manual Render Button -->
+        <button @click="render" class="premium-btn px-2.5 py-1.5 rounded-md cursor-pointer text-[11px] font-medium transition-all duration-200 flex items-center gap-1"
+          :style="{
+            background: hasError ? 'rgba(239,68,68,0.12)' : 'rgba(16,185,129,0.12)',
+            color: hasError ? 'var(--error)' : 'var(--success)',
+            border: hasError ? '1px solid rgba(239,68,68,0.25)' : '1px solid rgba(16,185,129,0.25)',
+          }"
+          @mouseenter="($event.target as HTMLElement).style.background = hasError ? 'rgba(239,68,68,0.2)' : 'rgba(16,185,129,0.2)'"
+          @mouseleave="($event.target as HTMLElement).style.background = hasError ? 'rgba(239,68,68,0.12)' : 'rgba(16,185,129,0.12)'"
+          title="手动渲染">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg>
+          渲染
+        </button>
       </div>
     </div>
 
@@ -132,8 +159,9 @@
 <script setup lang="ts">
 import { ref, computed, watch, nextTick } from 'vue'
 import mermaid from 'mermaid'
-import { getMermaidConfig, chartThemePresets } from '../utils/mermaidConfig'
+import { getMermaidConfig, chartThemePresets, dateFormatOptions } from '../utils/mermaidConfig'
 import type { ChartThemeId } from '../types'
+import CustomSelect from './CustomSelect.vue'
 
 const props = defineProps<{
   code: string
@@ -144,7 +172,11 @@ const props = defineProps<{
 const emit = defineEmits<{
   errorChange: [hasError: boolean]
   chartThemeChange: [theme: ChartThemeId]
+  dateFormatChange: [format: string]
 }>()
+
+const dateFormat = ref('YYYY-MM-DD')
+const hasError = ref(false)
 
 const svg = ref('')
 const error = ref('')
@@ -156,6 +188,12 @@ const sliderRef = ref<HTMLElement | null>(null)
 
 let renderCounter = 0
 let rendering = false
+
+const onDateFormatChange = (format: string) => {
+  dateFormat.value = format
+  emit('dateFormatChange', format)
+  render()
+}
 
 // Zoom ratio 0..1 for slider position
 const zoomRatio = computed(() => (zoom.value - 0.3) / 2.7)
@@ -232,14 +270,20 @@ const render = async () => {
   const id = `mermaid-gantt-${++renderCounter}`
 
   try {
-    mermaid.initialize(getMermaidConfig(props.chartTheme))
+    const axisFmt = dateFormat.value === 'YYYY-MM-DD' ? '%Y-%m-%d' :
+      dateFormat.value === 'YYYY/MM/DD' ? '%Y/%m/%d' :
+      dateFormat.value === 'MM/DD/YYYY' ? '%m/%d/%Y' :
+      '%d-%m-%Y'
+    mermaid.initialize(getMermaidConfig(props.chartTheme, axisFmt))
     const result = await mermaid.render(id, props.code)
     svg.value = result.svg
     error.value = ''
+    hasError.value = false
     emit('errorChange', false)
   } catch (err) {
     const errorMessage = err instanceof Error ? err.message : '渲染失败'
     error.value = errorMessage
+    hasError.value = true
     emit('errorChange', true)
     const errorEl = document.getElementById(id)
     if (errorEl) errorEl.remove()
@@ -351,7 +395,9 @@ const postProcessSvg = () => {
   }
 }
 
-watch([() => props.code, () => props.chartTheme], render, { immediate: true })
+watch([() => props.code, () => props.chartTheme], () => {
+  render()
+}, { immediate: true })
 
 // Auto fit on first render, with SVG post-processing
 watch(svg, (newSvg) => {

@@ -9,6 +9,13 @@ export interface ChartThemePreset {
   config: MermaidConfig
 }
 
+export const dateFormatOptions = [
+  { value: 'YYYY-MM-DD', label: 'YYYY-MM-DD' },
+  { value: 'YYYY/MM/DD', label: 'YYYY/MM/DD' },
+  { value: 'MM/DD/YYYY', label: 'MM/DD/YYYY' },
+  { value: 'DD-MM-YYYY', label: 'DD-MM-YYYY' },
+]
+
 const baseGanttConfig = {
   titleTopMargin: 25,
   barHeight: 24,
@@ -226,9 +233,13 @@ export const chartThemePresets: ChartThemePreset[] = [
   },
 ]
 
-export const getMermaidConfig = (chartTheme: ChartThemeId): MermaidConfig => {
+export const getMermaidConfig = (chartTheme: ChartThemeId, axisFormat?: string): MermaidConfig => {
   const preset = chartThemePresets.find(p => p.id === chartTheme) || chartThemePresets[0]
-  return preset.config
+  const config = { ...preset.config }
+  if (axisFormat && config.gantt) {
+    config.gantt = { ...config.gantt, axisFormat }
+  }
+  return config
 }
 
 // Legacy support
