@@ -38,7 +38,7 @@
               v-for="option in options"
               :key="option.value"
               type="button"
-              class="w-full text-left px-3 py-2 text-sm cursor-pointer transition-colors duration-100 flex items-center gap-2"
+              class="w-full text-left px-3 py-2 text-sm cursor-pointer transition-colors duration-100 flex items-center gap-2 whitespace-nowrap"
               :style="{
                 color: modelValue === option.value ? 'var(--accent)' : 'var(--text-primary)',
                 background: modelValue === option.value ? 'var(--accent-subtle)' : 'transparent',
@@ -90,7 +90,7 @@ const displayValue = computed(() => {
   return opt ? opt.label : props.placeholder || props.modelValue
 })
 
-const updatePosition = () => {
+  const updatePosition = () => {
   if (!selectRef.value || !isOpen.value) return
   const rect = selectRef.value.getBoundingClientRect()
   const viewportH = window.innerHeight
@@ -98,9 +98,14 @@ const updatePosition = () => {
   const spaceBelow = viewportH - rect.bottom
   const openAbove = spaceBelow < dropdownH && rect.top > dropdownH
 
+  // Calculate minimum width based on longest option text
+  const maxLabelWidth = Math.max(...props.options.map(o => o.label.length * 8 + 32), 120)
+  const dropdownWidth = Math.max(rect.width, maxLabelWidth)
+
   dropdownStyle.value = {
     left: `${rect.left}px`,
-    width: `${rect.width}px`,
+    width: `${dropdownWidth}px`,
+    minWidth: '120px',
     ...(openAbove
       ? { bottom: `${viewportH - rect.top + 4}px` }
       : { top: `${rect.bottom + 4}px` }),
