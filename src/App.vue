@@ -48,28 +48,13 @@
         </template>
         <template #right>
           <div ref="previewContainerRef" class="h-full">
-            <div class="h-full flex flex-col" style="background: var(--bg-secondary);">
-              <div class="px-4 py-2 text-xs font-medium border-b flex items-center gap-2.5"
-                style="border-color: var(--border-primary); color: var(--text-tertiary); background: var(--bg-tertiary);">
-                <div class="w-5 h-5 rounded-md flex items-center justify-center" :style="{ background: 'rgba(16,185,129,0.1)' }">
-                  <svg class="w-3 h-3" style="color: var(--success);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                  </svg>
-                </div>
-                <span>甘特图预览</span>
-                <span class="text-[10px] px-1.5 py-0.5 rounded font-mono" :style="{ background: 'var(--bg-secondary)', color: 'var(--text-tertiary)', border: '1px solid var(--border-secondary)' }">Live</span>
-              </div>
-              <div class="flex-1 overflow-hidden">
-                <GanttPreview
-                  :code="debouncedCode"
-                  :theme="theme"
-                  :chart-theme="chartTheme"
-                  @error-change="hasError = $event"
-                  @chart-theme-change="handleChartThemeChange"
-                />
-              </div>
-            </div>
+            <GanttPreview
+              :code="debouncedCode"
+              :theme="theme"
+              :chart-theme="chartTheme"
+              @error-change="hasError = $event"
+              @chart-theme-change="handleChartThemeChange"
+            />
           </div>
         </template>
       </SplitPane>
@@ -94,17 +79,13 @@
       </div>
       <!-- 预览 Tab -->
       <div v-show="mobileTab === 'preview'" class="h-full">
-        <div ref="previewContainerRef" class="h-full flex flex-col" style="background: var(--bg-secondary);">
-          <div class="flex-1 overflow-hidden">
-            <GanttPreview
-              :code="debouncedCode"
-              :theme="theme"
-              :chart-theme="chartTheme"
-              @error-change="hasError = $event"
-              @chart-theme-change="handleChartThemeChange"
-            />
-          </div>
-        </div>
+        <GanttPreview
+          :code="debouncedCode"
+          :theme="theme"
+          :chart-theme="chartTheme"
+          @error-change="hasError = $event"
+          @chart-theme-change="handleChartThemeChange"
+        />
       </div>
     </div>
 
