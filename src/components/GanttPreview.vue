@@ -81,7 +81,9 @@
         v-if="svg && code.trim()"
         ref="scrollContainerRef"
         class="absolute inset-0 overflow-auto gantt-preview-scroll"
+        :class="{ 'is-dragging': isPanning }"
         @wheel="onWheel"
+        @mousedown="onMouseDown"
       >
         <div
           ref="containerRef"
@@ -207,7 +209,12 @@ const rendering = ref(false)
 const containerRef = ref<HTMLElement | null>(null)
 const scrollContainerRef = ref<HTMLElement | null>(null)
 const showZoomIndicator = ref(false)
+const isPanning = ref(false)
 let zoomIndicatorTimer: ReturnType<typeof setTimeout> | null = null
+let panStartX = 0
+let panStartY = 0
+let scrollStartX = 0
+let scrollStartY = 0
 
 let renderCounter = 0
 
@@ -256,6 +263,38 @@ const onWheel = (e: WheelEvent) => {
   const delta = e.deltaY > 0 ? -0.08 : 0.08
   zoom.value = Math.max(0.3, Math.min(3, Math.round((zoom.value + delta) * 100) / 100))
   flashZoomIndicator()
+}
+
+// Mouse drag to pan
+const onMouseDown = (e: MouseEvent) => {
+  if (e.button !== 0) return // Only left button
+  if (!scrollContainerRef.value) return
+  isPanning.value = true
+  panStartX = e.clientX
+  panStartY = e.clientY
+  scrollStartX = scrollContainerRef.value.scrollLeft
+  scrollStartY = scrollContainerRef.value.scrollTop
+
+  const onMouseMove = (ev: MouseEvent) => {
+    if (!isPanning.value || !scrollContainerRef.value) return
+    const dx = ev.clientX - panStartX
+    const dy = ev.clientY - panStartY
+    scrollContainerRef.value.scrollLeft = scrollStartX - dx
+    scrollContainerRef.value.scrollTop = scrollStartY - dy
+  }
+
+  const onMouseUp = () => {
+    isPanning.value = false
+    document.removeEventListener('mousemove', onMouseMove)
+    document.removeEventListener('mouseup', onMouseUp)
+    document.body.style.cursor = ''
+    document.body.style.userSelect = ''
+  }
+
+  document.body.style.cursor = 'grabbing'
+  document.body.style.userSelect = 'none'
+  document.addEventListener('mousemove', onMouseMove)
+  document.addEventListener('mouseup', onMouseUp)
 }
 
 const render = async () => {
@@ -582,6 +621,11 @@ watch(svg, (newSvg) => {
 /* ── Scrollbar ── */
 .gantt-preview-scroll {
   scrollbar-width: thin;
+  cursor: grab;
+}
+
+.gantt-preview-scroll.is-dragging {
+  cursor: grabbing;
 }
 
 /* ── Animations ── */
