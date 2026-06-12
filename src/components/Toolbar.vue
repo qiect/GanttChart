@@ -86,59 +86,64 @@
       </div>
 
       <!-- 右侧：操作按钮 -->
-      <div class="flex items-center gap-0.5 lg:gap-1">
-        <button
-          class="premium-btn px-3 py-1.5 text-sm rounded-lg flex items-center gap-1.5 cursor-pointer font-medium"
-          :style="{ color: 'var(--text-secondary)' }"
-          @click="$emit('openTemplate')"
-          @mouseenter="($event.target as HTMLElement).style.background = 'var(--bg-tertiary)'"
-          @mouseleave="($event.target as HTMLElement).style.background = 'transparent'"
-        >
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6zM16 13a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z" />
-          </svg>
-          模板
-        </button>
-        <button
-          class="premium-btn px-3 py-1.5 text-sm rounded-lg flex items-center gap-1.5 cursor-pointer font-medium"
-          :style="{ color: 'var(--text-secondary)' }"
-          @click="handleImport"
-          @mouseenter="($event.target as HTMLElement).style.background = 'var(--bg-tertiary)'"
-          @mouseleave="($event.target as HTMLElement).style.background = 'transparent'"
-        >
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
-          </svg>
-          导入
-        </button>
-        <button
-          class="premium-btn px-3 py-1.5 text-sm rounded-lg flex items-center gap-1.5 cursor-pointer font-medium"
-          :style="{ color: 'var(--text-secondary)' }"
-          @click="handleSave"
-          @mouseenter="($event.target as HTMLElement).style.background = 'var(--bg-tertiary)'"
-          @mouseleave="($event.target as HTMLElement).style.background = 'transparent'"
-        >
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M5 3h11l5 5v12a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2z" />
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M7 3v6h8V3" />
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M7 21v-6h10v6" />
-          </svg>
-          保存
-        </button>
-        <div class="w-px h-5 mx-1" :style="{ background: 'var(--border-primary)' }" />
+      <div class="flex items-center gap-1 lg:gap-1.5">
+        <!-- 文件操作组 -->
+        <div class="flex items-center rounded-lg p-0.5" :style="{ background: 'var(--bg-tertiary)' }">
+          <button
+            class="premium-btn px-2.5 py-1 text-xs rounded-md flex items-center gap-1.5 cursor-pointer font-medium"
+            :style="{ color: 'var(--text-secondary)' }"
+            @click="$emit('openTemplate')"
+            @mouseenter="($event.target as HTMLElement).style.background = 'var(--bg-elevated)'; ($event.target as HTMLElement).style.boxShadow = 'var(--shadow-sm)'"
+            @mouseleave="($event.target as HTMLElement).style.background = 'transparent'; ($event.target as HTMLElement).style.boxShadow = 'none'"
+            title="模板 (Ctrl+T)">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6zM16 13a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z" />
+            </svg>
+            模板
+          </button>
+          <button
+            class="premium-btn px-2.5 py-1 text-xs rounded-md flex items-center gap-1.5 cursor-pointer font-medium"
+            :style="{ color: 'var(--text-secondary)' }"
+            @click="handleImport"
+            @mouseenter="($event.target as HTMLElement).style.background = 'var(--bg-elevated)'; ($event.target as HTMLElement).style.boxShadow = 'var(--shadow-sm)'"
+            @mouseleave="($event.target as HTMLElement).style.background = 'transparent'; ($event.target as HTMLElement).style.boxShadow = 'none'"
+            title="导入">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+            </svg>
+            导入
+          </button>
+          <button
+            class="premium-btn px-2.5 py-1 text-xs rounded-md flex items-center gap-1.5 cursor-pointer font-medium"
+            :style="{ color: 'var(--text-secondary)' }"
+            @click="handleSave"
+            @mouseenter="($event.target as HTMLElement).style.background = 'var(--bg-elevated)'; ($event.target as HTMLElement).style.boxShadow = 'var(--shadow-sm)'"
+            @mouseleave="($event.target as HTMLElement).style.background = 'transparent'; ($event.target as HTMLElement).style.boxShadow = 'none'"
+            title="保存 (Ctrl+S)">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M5 3h11l5 5v12a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2z" />
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M7 3v6h8V3" />
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M7 21v-6h10v6" />
+            </svg>
+            保存
+          </button>
+        </div>
+
+        <!-- 导出组 -->
         <ExportMenu :chart-element="chartElement" :theme="theme" :code="code" />
-        <div class="w-px h-5 mx-1" :style="{ background: 'var(--border-primary)' }" />
+
+        <!-- 主题切换 -->
         <button
-          class="premium-btn px-3 py-1.5 text-sm rounded-lg flex items-center gap-1.5 cursor-pointer font-medium"
+          class="premium-btn px-2.5 py-1 text-xs rounded-lg flex items-center gap-1.5 cursor-pointer font-medium"
           :style="{ color: 'var(--text-secondary)' }"
           @click="$emit('themeChange', theme === 'dark' ? 'light' : 'dark')"
           @mouseenter="($event.target as HTMLElement).style.background = 'var(--bg-tertiary)'"
           @mouseleave="($event.target as HTMLElement).style.background = 'transparent'"
-        >
-          <svg v-if="theme === 'dark'" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          title="切换主题">
+          <svg v-if="theme === 'dark'" class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
           </svg>
-          <svg v-else class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg v-else class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
           </svg>
           {{ theme === 'dark' ? '浅色' : '深色' }}
