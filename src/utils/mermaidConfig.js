@@ -1,3 +1,10 @@
+export const dateFormatOptions = [
+    { value: 'YYYY-MM-DD', label: 'YYYY-MM-DD' },
+    { value: 'YYYY/MM/DD', label: 'YYYY/MM/DD' },
+    { value: 'MM/DD/YYYY', label: 'MM/DD/YYYY' },
+    { value: 'DD-MM-YYYY', label: 'DD-MM-YYYY' },
+];
+
 const baseGanttConfig = {
     titleTopMargin: 25,
     barHeight: 24,
@@ -36,6 +43,10 @@ export const chartThemePresets = [
                 nodeTextColor: '#3730a3',
                 fontSize: '12px',
                 fontFamily: '"DM Sans", sans-serif',
+                cScale0: '#6366f1',
+                cScale1: '#818cf8',
+                cScale2: '#a5b4fc',
+                cScale3: '#c7d2fe',
             },
             gantt: { ...baseGanttConfig },
             securityLevel: 'loose',
@@ -44,20 +55,20 @@ export const chartThemePresets = [
     {
         id: 'emerald',
         name: '翡翠',
-        swatch: '#10b981',
+        swatch: '#059669',
         config: {
             startOnLoad: false,
             theme: 'base',
             themeVariables: {
-                primaryColor: '#10b981',
+                primaryColor: '#059669',
                 primaryTextColor: '#ffffff',
-                primaryBorderColor: '#059669',
+                primaryBorderColor: '#047857',
                 lineColor: '#a7f3d0',
                 secondaryColor: '#ecfdf5',
                 tertiaryColor: '#d1fae5',
                 background: '#f8fdfb',
-                mainBkg: '#10b981',
-                nodeBorder: '#059669',
+                mainBkg: '#059669',
+                nodeBorder: '#047857',
                 clusterBkg: '#ecfdf5',
                 clusterBorder: '#a7f3d0',
                 titleColor: '#064e3b',
@@ -65,6 +76,10 @@ export const chartThemePresets = [
                 nodeTextColor: '#065f46',
                 fontSize: '12px',
                 fontFamily: '"DM Sans", sans-serif',
+                cScale0: '#059669',
+                cScale1: '#10b981',
+                cScale2: '#34d399',
+                cScale3: '#6ee7b7',
             },
             gantt: { ...baseGanttConfig },
             securityLevel: 'loose',
@@ -73,20 +88,20 @@ export const chartThemePresets = [
     {
         id: 'ocean',
         name: '深海',
-        swatch: '#0ea5e9',
+        swatch: '#0369a1',
         config: {
             startOnLoad: false,
             theme: 'base',
             themeVariables: {
-                primaryColor: '#0ea5e9',
+                primaryColor: '#0369a1',
                 primaryTextColor: '#ffffff',
-                primaryBorderColor: '#0284c7',
+                primaryBorderColor: '#075985',
                 lineColor: '#bae6fd',
                 secondaryColor: '#f0f9ff',
                 tertiaryColor: '#e0f2fe',
                 background: '#f8fbff',
-                mainBkg: '#0ea5e9',
-                nodeBorder: '#0284c7',
+                mainBkg: '#0369a1',
+                nodeBorder: '#075985',
                 clusterBkg: '#f0f9ff',
                 clusterBorder: '#bae6fd',
                 titleColor: '#0c4a6e',
@@ -94,6 +109,10 @@ export const chartThemePresets = [
                 nodeTextColor: '#075985',
                 fontSize: '12px',
                 fontFamily: '"DM Sans", sans-serif',
+                cScale0: '#0369a1',
+                cScale1: '#0ea5e9',
+                cScale2: '#38bdf8',
+                cScale3: '#7dd3fc',
             },
             gantt: { ...baseGanttConfig },
             securityLevel: 'loose',
@@ -102,21 +121,21 @@ export const chartThemePresets = [
     {
         id: 'obsidian',
         name: '黑曜',
-        swatch: '#8b5cf6',
+        swatch: '#7c3aed',
         config: {
             startOnLoad: false,
             theme: 'dark',
             themeVariables: {
                 darkMode: true,
                 background: '#0f0f1a',
-                primaryColor: '#8b5cf6',
+                primaryColor: '#7c3aed',
                 primaryTextColor: '#ede9fe',
-                primaryBorderColor: '#7c3aed',
+                primaryBorderColor: '#6d28d9',
                 lineColor: '#4c1d95',
                 secondaryColor: '#1e1b4b',
                 tertiaryColor: '#1a1730',
-                mainBkg: '#8b5cf6',
-                nodeBorder: '#7c3aed',
+                mainBkg: '#7c3aed',
+                nodeBorder: '#6d28d9',
                 clusterBkg: '#1e1b4b',
                 clusterBorder: '#4c1d95',
                 titleColor: '#c4b5fd',
@@ -124,6 +143,10 @@ export const chartThemePresets = [
                 nodeTextColor: '#c4b5fd',
                 fontSize: '12px',
                 fontFamily: '"DM Sans", sans-serif',
+                cScale0: '#7c3aed',
+                cScale1: '#8b5cf6',
+                cScale2: '#a78bfa',
+                cScale3: '#c4b5fd',
             },
             gantt: { ...baseGanttConfig },
             securityLevel: 'loose',
@@ -132,20 +155,20 @@ export const chartThemePresets = [
     {
         id: 'amber',
         name: '琥珀',
-        swatch: '#f59e0b',
+        swatch: '#d97706',
         config: {
             startOnLoad: false,
             theme: 'base',
             themeVariables: {
-                primaryColor: '#f59e0b',
+                primaryColor: '#d97706',
                 primaryTextColor: '#ffffff',
-                primaryBorderColor: '#d97706',
+                primaryBorderColor: '#b45309',
                 lineColor: '#fde68a',
                 secondaryColor: '#fffbeb',
                 tertiaryColor: '#fef3c7',
                 background: '#fffefb',
-                mainBkg: '#f59e0b',
-                nodeBorder: '#d97706',
+                mainBkg: '#d97706',
+                nodeBorder: '#b45309',
                 clusterBkg: '#fffbeb',
                 clusterBorder: '#fde68a',
                 titleColor: '#78350f',
@@ -153,6 +176,10 @@ export const chartThemePresets = [
                 nodeTextColor: '#92400e',
                 fontSize: '12px',
                 fontFamily: '"DM Sans", sans-serif',
+                cScale0: '#d97706',
+                cScale1: '#f59e0b',
+                cScale2: '#fbbf24',
+                cScale3: '#fcd34d',
             },
             gantt: { ...baseGanttConfig },
             securityLevel: 'loose',
@@ -161,20 +188,20 @@ export const chartThemePresets = [
     {
         id: 'slate',
         name: '石墨',
-        swatch: '#64748b',
+        swatch: '#475569',
         config: {
             startOnLoad: false,
             theme: 'base',
             themeVariables: {
-                primaryColor: '#64748b',
+                primaryColor: '#475569',
                 primaryTextColor: '#ffffff',
-                primaryBorderColor: '#475569',
+                primaryBorderColor: '#334155',
                 lineColor: '#cbd5e1',
                 secondaryColor: '#f8fafc',
                 tertiaryColor: '#f1f5f9',
                 background: '#fafbfc',
-                mainBkg: '#64748b',
-                nodeBorder: '#475569',
+                mainBkg: '#475569',
+                nodeBorder: '#334155',
                 clusterBkg: '#f8fafc',
                 clusterBorder: '#cbd5e1',
                 titleColor: '#1e293b',
@@ -182,15 +209,23 @@ export const chartThemePresets = [
                 nodeTextColor: '#334155',
                 fontSize: '12px',
                 fontFamily: '"DM Sans", sans-serif',
+                cScale0: '#475569',
+                cScale1: '#64748b',
+                cScale2: '#94a3b8',
+                cScale3: '#cbd5e1',
             },
             gantt: { ...baseGanttConfig },
             securityLevel: 'loose',
         },
     },
 ];
-export const getMermaidConfig = (chartTheme) => {
+export const getMermaidConfig = (chartTheme, axisFormat) => {
     const preset = chartThemePresets.find(p => p.id === chartTheme) || chartThemePresets[0];
-    return preset.config;
+    const config = { ...preset.config };
+    if (axisFormat && config.gantt) {
+        config.gantt = { ...config.gantt, axisFormat };
+    }
+    return config;
 };
 // Legacy support
 export const getMermaidConfigByAppTheme = (theme) => {

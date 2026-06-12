@@ -1,7 +1,7 @@
 <template>
   <div class="h-full w-full flex flex-col" style="background: var(--bg-secondary);">
     <!-- Toolbar -->
-    <div v-if="svg && code.trim()" class="shrink-0 flex items-center justify-between px-4 py-1.5 border-b"
+    <div class="shrink-0 flex items-center justify-between px-4 py-1.5 border-b"
       style="border-color: var(--border-secondary); background: var(--bg-tertiary);">
       <!-- Left: Chart Theme Selector -->
       <div class="flex items-center gap-2.5">
@@ -33,7 +33,7 @@
         </div>
       </div>
 
-      <!-- Right: Zoom Controls -->
+      <!-- Right: Zoom Controls + Render Button -->
       <div class="flex items-center gap-1">
         <button @click="zoomOut" class="premium-btn p-1.5 rounded-md cursor-pointer transition-all duration-200"
           :style="{ color: 'var(--text-tertiary)' }"
@@ -90,6 +90,20 @@
           title="重置缩放">
           重置
         </button>
+        <div class="w-px h-4 mx-1" :style="{ background: 'var(--border-primary)' }" />
+        <!-- Manual Render Button -->
+        <button @click="render" class="premium-btn px-2.5 py-1.5 rounded-md cursor-pointer text-[11px] font-medium transition-all duration-200 flex items-center gap-1"
+          :style="{
+            background: hasError ? 'rgba(239,68,68,0.12)' : 'rgba(16,185,129,0.12)',
+            color: hasError ? 'var(--error)' : 'var(--success)',
+            border: hasError ? '1px solid rgba(239,68,68,0.25)' : '1px solid rgba(16,185,129,0.25)',
+          }"
+          @mouseenter="($event.target as HTMLElement).style.background = hasError ? 'rgba(239,68,68,0.2)' : 'rgba(16,185,129,0.2)'"
+          @mouseleave="($event.target as HTMLElement).style.background = hasError ? 'rgba(239,68,68,0.12)' : 'rgba(16,185,129,0.12)'"
+          title="手动渲染">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg>
+          渲染
+        </button>
       </div>
     </div>
 
@@ -145,6 +159,8 @@ const emit = defineEmits<{
   errorChange: [hasError: boolean]
   chartThemeChange: [theme: ChartThemeId]
 }>()
+
+const hasError = ref(false)
 
 const svg = ref('')
 const error = ref('')
@@ -236,10 +252,12 @@ const render = async () => {
     const result = await mermaid.render(id, props.code)
     svg.value = result.svg
     error.value = ''
+    hasError.value = false
     emit('errorChange', false)
   } catch (err) {
     const errorMessage = err instanceof Error ? err.message : '渲染失败'
     error.value = errorMessage
+    hasError.value = true
     emit('errorChange', true)
     const errorEl = document.getElementById(id)
     if (errorEl) errorEl.remove()
@@ -319,8 +337,8 @@ const postProcessSvg = () => {
         // Only reposition if text is currently inside the bar
         if (currentX >= matchedRect.x && currentX <= barRight) {
           textEl.setAttribute('x', String(barRight + TEXT_OFFSET_RIGHT))
-          // Change text color for outside-bar text to ensure readability
-          textEl.style.fill = 'var(--text-secondary, #555)'
+          // Use CSS variable so it adapts to site light/dark theme
+          textEl.style.fill = 'var(--text-secondary, #5c6170)'
           textEl.style.fontSize = '11px'
           textEl.style.fontWeight = '500'
         }
@@ -351,7 +369,9 @@ const postProcessSvg = () => {
   }
 }
 
-watch([() => props.code, () => props.chartTheme], render, { immediate: true })
+watch([() => props.code, () => props.chartTheme], () => {
+  render()
+}, { immediate: true })
 
 // Auto fit on first render, with SVG post-processing
 watch(svg, (newSvg) => {
@@ -375,6 +395,31 @@ watch(svg, (newSvg) => {
 
 .gantt-svg-container :deep(svg .taskText) {
   overflow: visible !important;
+}
+
+/* ── Force all SVG text to use CSS variable colors so it adapts to site theme ── */
+.gantt-svg-container :deep(svg .tick text),
+.gantt-svg-container :deep(svg .axis text),
+.gantt-svg-container :deep(svg .sectionTitle),
+.gantt-svg-container :deep(svg .taskTextOutside),
+.gantt-svg-container :deep(svg text:not(.taskText)) {
+  fill: var(--text-secondary, #5c6170) !important;
+}
+
+/* Task text inside bars: keep theme-provided color or force dark on light bg */
+.gantt-svg-container :deep(svg .taskText) {
+  fill: var(--text-primary, #1a1d26) !important;
+}
+
+/* Section titles slightly bolder */
+.gantt-svg-container :deep(svg .sectionTitle) {
+  fill: var(--text-primary, #1a1d26) !important;
+  font-weight: 600 !important;
+}
+
+/* Grid lines softer */
+.gantt-svg-container :deep(svg .grid .tick line) {
+  stroke: var(--border-primary, #e4e7ee) !important;
 }
 
 /* Hover highlight for task groups */
