@@ -3,7 +3,7 @@
     <!-- Title & Add Section -->
     <div class="shrink-0 flex items-center gap-2 px-4 py-1.5 border-b" style="border-color: var(--border-primary); background: var(--bg-tertiary);">
       <input v-model="title" @input="emitCode" class="premium-input flex-1 min-w-0 px-2.5 py-1 text-xs rounded-md outline-none" />
-      <button @click="addSection" class="premium-btn px-2.5 py-1 text-[11px] rounded-md cursor-pointer font-medium flex items-center gap-1 shrink-0"
+      <button @click="addSection" class="premium-btn px-2.5 py-1.5 text-[11px] rounded-md cursor-pointer font-medium flex items-center gap-1 shrink-0"
         :style="{
           background: 'var(--accent)',
           color: '#ffffff',
