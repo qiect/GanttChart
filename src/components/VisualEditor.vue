@@ -1,26 +1,19 @@
 <template>
   <div class="h-full flex flex-col" style="background: var(--bg-secondary); color: var(--text-primary);">
-    <!-- Title & Date Format & Add Section -->
-    <div class="p-3 md:p-4 border-b space-y-3" style="border-color: var(--border-primary); background: var(--bg-tertiary);">
-      <div class="flex flex-col sm:flex-row gap-2.5">
-        <div class="flex-1">
-          <label class="text-[10px] font-semibold block mb-1.5 tracking-widest uppercase" style="color: var(--text-tertiary); letter-spacing: 0.08em;">项目标题</label>
-          <input v-model="title" @input="emitCode" class="premium-input w-full px-3 py-2 text-sm rounded-lg outline-none" />
-        </div>
-        <div class="sm:w-auto flex items-end">
-          <button @click="addSection" class="premium-btn px-4 py-2 text-sm rounded-lg cursor-pointer font-medium flex items-center gap-1.5"
-            :style="{
-              background: 'var(--accent)',
-              color: '#ffffff',
-              boxShadow: '0 2px 8px var(--accent-glow)',
-            }"
-            @mouseenter="($event.target as HTMLElement).style.background = 'var(--accent-hover)'; ($event.target as HTMLElement).style.boxShadow = '0 4px 16px var(--accent-glow)'"
-            @mouseleave="($event.target as HTMLElement).style.background = 'var(--accent)'; ($event.target as HTMLElement).style.boxShadow = '0 2px 8px var(--accent-glow)'">
-            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/></svg>
-            分区
-          </button>
-        </div>
-      </div>
+    <!-- Title & Add Section -->
+    <div class="shrink-0 flex items-center gap-2 px-4 py-1.5 border-b" style="border-color: var(--border-primary); background: var(--bg-tertiary);">
+      <input v-model="title" @input="emitCode" class="premium-input flex-1 min-w-0 px-2.5 py-1 text-xs rounded-md outline-none" />
+      <button @click="addSection" class="premium-btn px-2.5 py-1 text-[11px] rounded-md cursor-pointer font-medium flex items-center gap-1 shrink-0"
+        :style="{
+          background: 'var(--accent)',
+          color: '#ffffff',
+          boxShadow: '0 2px 8px var(--accent-glow)',
+        }"
+        @mouseenter="($event.target as HTMLElement).style.background = 'var(--accent-hover)'; ($event.target as HTMLElement).style.boxShadow = '0 4px 16px var(--accent-glow)'"
+        @mouseleave="($event.target as HTMLElement).style.background = 'var(--accent)'; ($event.target as HTMLElement).style.boxShadow = '0 2px 8px var(--accent-glow)'">
+        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/></svg>
+        分区
+      </button>
     </div>
 
     <!-- Sections & Tasks -->
