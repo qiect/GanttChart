@@ -7,14 +7,6 @@
           <label class="text-[10px] font-semibold block mb-1.5 tracking-widest uppercase" style="color: var(--text-tertiary); letter-spacing: 0.08em;">项目标题</label>
           <input v-model="title" @input="emitCode" class="premium-input w-full px-3 py-2 text-sm rounded-lg outline-none" />
         </div>
-        <div class="sm:w-40">
-          <label class="text-[10px] font-semibold block mb-1.5 tracking-widest uppercase" style="color: var(--text-tertiary); letter-spacing: 0.08em;">日期格式</label>
-          <CustomSelect
-            v-model="dateFormat"
-            :options="dateFormatOptions"
-            @change="emitCode"
-          />
-        </div>
         <div class="sm:w-auto flex items-end">
           <button @click="addSection" class="premium-btn px-4 py-2 text-sm rounded-lg cursor-pointer font-medium flex items-center gap-1.5"
             :style="{
@@ -181,20 +173,12 @@ const emit = defineEmits<{
 }>()
 
 const title = ref('项目计划')
-const dateFormat = ref('YYYY-MM-DD')
 const sections = ref<GanttSection[]>([])
 const taskDurationNums = ref<Record<number, Record<number, number>>>({})
 const taskDurationUnits = ref<Record<number, Record<number, string>>>({})
 const collapsedSections = ref<Set<number>>(new Set())
 
 // Select options
-const dateFormatOptions = [
-  { value: 'YYYY-MM-DD', label: 'YYYY-MM-DD' },
-  { value: 'YYYY/MM/DD', label: 'YYYY/MM/DD' },
-  { value: 'MM/DD/YYYY', label: 'MM/DD/YYYY' },
-  { value: 'DD-MM-YYYY', label: 'DD-MM-YYYY' },
-]
-
 const durationUnitOptions = [
   { value: 'd', label: '天' },
   { value: 'h', label: '小时' },
@@ -247,9 +231,6 @@ const parseCode = () => {
     if (trimmed.startsWith('title ')) {
       title.value = trimmed.replace('title ', '')
     }
-    if (trimmed.startsWith('dateFormat ')) {
-      dateFormat.value = trimmed.replace('dateFormat ', '')
-    }
   }
 
   taskDurationNums.value = {}
@@ -272,7 +253,7 @@ const parseCode = () => {
 
 const emitCode = () => {
   isEmitting = true
-  const code = generateMermaidGantt(sections.value, title.value, dateFormat.value)
+  const code = generateMermaidGantt(sections.value, title.value)
   emit('update:modelValue', code)
   // Reset flag after Vue's next tick
   setTimeout(() => { isEmitting = false }, 0)

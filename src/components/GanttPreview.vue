@@ -33,19 +33,6 @@
         </div>
       </div>
 
-      <!-- Center: Date Format -->
-      <div class="flex items-center gap-2">
-        <div class="w-px h-3.5" style="background: var(--border-primary);"></div>
-        <span class="text-[10px] font-semibold tracking-widest uppercase shrink-0"
-          style="color: var(--text-tertiary); letter-spacing: 0.08em;">日期</span>
-        <CustomSelect
-          :model-value="dateFormat"
-          :options="dateFormatOptions"
-          @update:model-value="onDateFormatChange"
-          class="w-28"
-        />
-      </div>
-
       <!-- Right: Zoom Controls + Render Button -->
       <div class="flex items-center gap-1">
         <button @click="zoomOut" class="premium-btn p-1.5 rounded-md cursor-pointer transition-all duration-200"
@@ -159,9 +146,8 @@
 <script setup lang="ts">
 import { ref, computed, watch, nextTick } from 'vue'
 import mermaid from 'mermaid'
-import { getMermaidConfig, chartThemePresets, dateFormatOptions } from '../utils/mermaidConfig'
+import { getMermaidConfig, chartThemePresets } from '../utils/mermaidConfig'
 import type { ChartThemeId } from '../types'
-import CustomSelect from './CustomSelect.vue'
 
 const props = defineProps<{
   code: string
@@ -172,10 +158,8 @@ const props = defineProps<{
 const emit = defineEmits<{
   errorChange: [hasError: boolean]
   chartThemeChange: [theme: ChartThemeId]
-  dateFormatChange: [format: string]
 }>()
 
-const dateFormat = ref('YYYY-MM-DD')
 const hasError = ref(false)
 
 const svg = ref('')
@@ -188,12 +172,6 @@ const sliderRef = ref<HTMLElement | null>(null)
 
 let renderCounter = 0
 let rendering = false
-
-const onDateFormatChange = (format: string) => {
-  dateFormat.value = format
-  emit('dateFormatChange', format)
-  render()
-}
 
 // Zoom ratio 0..1 for slider position
 const zoomRatio = computed(() => (zoom.value - 0.3) / 2.7)
@@ -270,11 +248,7 @@ const render = async () => {
   const id = `mermaid-gantt-${++renderCounter}`
 
   try {
-    const axisFmt = dateFormat.value === 'YYYY-MM-DD' ? '%Y-%m-%d' :
-      dateFormat.value === 'YYYY/MM/DD' ? '%Y/%m/%d' :
-      dateFormat.value === 'MM/DD/YYYY' ? '%m/%d/%Y' :
-      '%d-%m-%Y'
-    mermaid.initialize(getMermaidConfig(props.chartTheme, axisFmt))
+    mermaid.initialize(getMermaidConfig(props.chartTheme))
     const result = await mermaid.render(id, props.code)
     svg.value = result.svg
     error.value = ''
