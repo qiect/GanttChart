@@ -1,11 +1,7 @@
-export type TemplateCategory = 'software' | 'business' | 'engineering' | 'life' | 'education'
-
 export interface GanttTemplate {
   id: string
   name: string
   description: string
-  category: TemplateCategory
-  icon: string
   code: string
 }
 
