@@ -27,7 +27,7 @@ export interface GanttSection {
   tasks: GanttTask[]
 }
 
-export type ChartThemeId = 'indigo' | 'emerald' | 'ocean' | 'obsidian' | 'amber' | 'slate'
+export type ChartThemeId = 'aizuri' | 'cedar' | 'lagoon' | 'obsidian' | 'cinnabar' | 'platinum'
 
 export interface AppState {
   code: string
