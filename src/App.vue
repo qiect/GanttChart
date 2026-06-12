@@ -6,7 +6,6 @@
       :chart-element="chartElement"
       :editor-mode="editorMode"
       :mobile-tab="mobileTab"
-      :layout-mode="layoutMode"
       @code-change="handleCodeChange"
       @theme-change="handleThemeChange"
       @open-template="isTemplateOpen = true"
@@ -15,47 +14,9 @@
       @mobile-tab-change="handleMobileTabChange"
     />
 
-    <!-- 手机端：Tab 全屏切换 -->
-    <div v-if="layoutMode === 'mobile'" class="flex-1 overflow-hidden">
-      <!-- 编辑器 Tab -->
-      <div v-show="mobileTab === 'editor'" class="h-full flex flex-col" style="background: var(--bg-secondary);">
-        <div class="flex-1 overflow-hidden">
-          <MermaidEditor
-            v-if="editorMode === 'code'"
-            v-model="code"
-            :theme="theme"
-          />
-          <VisualEditor
-            v-else
-            v-model="code"
-            :theme="theme"
-          />
-        </div>
-      </div>
-      <!-- 预览 Tab -->
-      <div v-show="mobileTab === 'preview'" class="h-full">
-        <div ref="previewContainerRef" class="h-full flex flex-col" style="background: var(--bg-secondary);">
-          <div class="flex-1 overflow-hidden">
-            <GanttPreview
-              :code="debouncedCode"
-              :theme="theme"
-              :chart-theme="chartTheme"
-              @error-change="hasError = $event"
-              @chart-theme-change="handleChartThemeChange"
-            />
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- iPad / 桌面端：分屏布局 -->
-    <div v-else class="flex-1 overflow-hidden">
-      <SplitPane
-        :default-ratio="layoutMode === 'tablet' ? 0.4 : 0.3"
-        :min-left-width="layoutMode === 'tablet' ? 260 : 280"
-        :min-right-width="layoutMode === 'tablet' ? 280 : 300"
-        @ratio-change="handleRatioChange"
-      >
+    <!-- 桌面端：分屏布局 -->
+    <div v-if="!isMobile" class="flex-1 overflow-hidden">
+      <SplitPane :default-ratio="0.3" @ratio-change="handleRatioChange">
         <template #left>
           <div class="h-full flex flex-col" style="background: var(--bg-secondary);">
             <div class="px-3 md:px-4 py-2 text-xs font-medium border-b flex items-center gap-2"
@@ -100,6 +61,39 @@
       </SplitPane>
     </div>
 
+    <!-- 移动端：Tab 全屏切换 -->
+    <div v-else class="flex-1 overflow-hidden">
+      <!-- 编辑器 Tab -->
+      <div v-show="mobileTab === 'editor'" class="h-full flex flex-col" style="background: var(--bg-secondary);">
+        <div class="flex-1 overflow-hidden">
+          <MermaidEditor
+            v-if="editorMode === 'code'"
+            v-model="code"
+            :theme="theme"
+          />
+          <VisualEditor
+            v-else
+            v-model="code"
+            :theme="theme"
+          />
+        </div>
+      </div>
+      <!-- 预览 Tab -->
+      <div v-show="mobileTab === 'preview'" class="h-full">
+        <div ref="previewContainerRef" class="h-full flex flex-col" style="background: var(--bg-secondary);">
+          <div class="flex-1 overflow-hidden">
+            <GanttPreview
+              :code="debouncedCode"
+              :theme="theme"
+              :chart-theme="chartTheme"
+              @error-change="hasError = $event"
+              @chart-theme-change="handleChartThemeChange"
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+
     <StatusBar :code="code" :has-error="hasError" :theme="theme" />
 
     <TemplateModal
@@ -126,8 +120,6 @@ import { useLocalStorage } from './composables/useLocalStorage'
 import { ganttTemplates } from './utils/mermaidTemplates'
 import type { GanttTemplate, ChartThemeId } from './types'
 
-type LayoutMode = 'mobile' | 'tablet' | 'desktop'
-
 const DEFAULT_CODE = ganttTemplates[0].code
 
 const [code, setCode] = useLocalStorage('gantt-studio-code', DEFAULT_CODE)
@@ -140,7 +132,7 @@ const isTemplateOpen = ref(false)
 const hasError = ref(false)
 const showSaveToast = ref(false)
 const previewContainerRef = ref<HTMLElement | null>(null)
-const layoutMode = ref<LayoutMode>('desktop')
+const isMobile = ref(false)
 const mobileTab = ref<'editor' | 'preview'>('editor')
 
 const debounceTimer = ref<ReturnType<typeof setTimeout> | null>(null)
@@ -153,25 +145,18 @@ watch(code, (newVal) => {
   }, 300)
 }, { immediate: true })
 
-const checkLayout = () => {
-  const w = window.innerWidth
-  if (w < 640) {
-    layoutMode.value = 'mobile'
-  } else if (w < 1024) {
-    layoutMode.value = 'tablet'
-  } else {
-    layoutMode.value = 'desktop'
-  }
+const checkMobile = () => {
+  isMobile.value = window.innerWidth < 768
 }
 
 onMounted(() => {
-  checkLayout()
-  window.addEventListener('resize', checkLayout)
+  checkMobile()
+  window.addEventListener('resize', checkMobile)
   document.documentElement.setAttribute('data-theme', theme.value)
 })
 
 onUnmounted(() => {
-  window.removeEventListener('resize', checkLayout)
+  window.removeEventListener('resize', checkMobile)
 })
 
 // Get chart element for export - search more broadly
@@ -227,8 +212,8 @@ const handleSave = () => {
 const handleTemplateSelect = (template: GanttTemplate) => {
   setCode(template.code)
   isTemplateOpen.value = false
-  // 手机端选择模板后自动切到预览
-  if (layoutMode.value === 'mobile') {
+  // 选择模板后自动切到预览
+  if (isMobile.value) {
     mobileTab.value = 'preview'
   }
 }
