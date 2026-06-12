@@ -64,7 +64,7 @@
         <div class="section-tasks-wrapper" :style="{ maxHeight: collapsedSections.has(si) ? '0px' : '2000px', overflow: 'hidden', transition: 'max-height 0.3s cubic-bezier(0.4, 0, 0.2, 1)' }">
           <div class="p-2.5 md:p-3 space-y-2">
             <div v-for="(task, ti) in section.tasks" :key="ti"
-              class="task-card p-3 md:p-3.5 rounded-lg relative group"
+              class="task-card p-3 md:p-3.5 rounded-lg relative"
               :style="{
                 background: 'var(--bg-secondary)',
                 border: '1px solid var(--border-secondary)',
@@ -78,23 +78,6 @@
                              task.status === 'milestone' ? 'var(--warning)' :
                              'var(--border-primary)'
                 }"></div>
-
-              <!-- Delete button — top right corner -->
-              <button @click="removeTask(si, ti)"
-                class="absolute top-2 right-2 premium-btn w-6 h-6 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-200 z-10"
-                :style="{
-                  color: 'var(--text-tertiary)',
-                  background: 'var(--bg-tertiary)',
-                  border: '1px solid var(--border-secondary)',
-                }"
-                @mouseenter="($event.target as HTMLElement).style.color = 'var(--error)'; ($event.target as HTMLElement).style.borderColor = 'var(--error)'; ($event.target as HTMLElement).style.background = 'rgba(239,68,68,0.08)'"
-                @mouseleave="($event.target as HTMLElement).style.color = 'var(--text-tertiary)'; ($event.target as HTMLElement).style.borderColor = 'var(--border-secondary)'; ($event.target as HTMLElement).style.background = 'var(--bg-tertiary)'"
-                title="删除任务">
-                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12" />
-                </svg>
-              </button>
-
               <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 pl-2">
                 <div>
                   <label class="text-[10px] font-semibold block mb-1 tracking-widest uppercase" style="color: var(--text-tertiary); letter-spacing: 0.08em;">任务名称</label>
@@ -106,12 +89,7 @@
                 </div>
                 <div>
                   <label class="text-[10px] font-semibold block mb-1 tracking-widest uppercase" style="color: var(--text-tertiary); letter-spacing: 0.08em;">开始日期</label>
-                  <div class="date-input-wrap relative">
-                    <svg class="date-input-icon absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 pointer-events-none" style="color: var(--text-tertiary);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                    </svg>
-                    <input v-model="task.startDate" @input="emitCode" type="date" class="premium-input date-input w-full pl-8 pr-3 py-1.5 text-sm rounded-lg outline-none" />
-                  </div>
+                  <input v-model="task.startDate" @input="emitCode" type="date" class="premium-input w-full px-3 py-1.5 text-sm rounded-lg outline-none" />
                 </div>
                 <div>
                   <label class="text-[10px] font-semibold block mb-1 tracking-widest uppercase" style="color: var(--text-tertiary); letter-spacing: 0.08em;">工期</label>
@@ -135,13 +113,26 @@
                     @change="onDependsOnChange(task)"
                   />
                 </div>
-                <div>
-                  <label class="text-[10px] font-semibold block mb-1 tracking-widest uppercase" style="color: var(--text-tertiary); letter-spacing: 0.08em;">状态</label>
-                  <CustomSelect
-                    v-model="task.status"
-                    :options="statusOptions"
-                    @change="onStatusChange(si, ti, task)"
-                  />
+                <div class="flex items-end gap-1.5">
+                  <div class="flex-1">
+                    <label class="text-[10px] font-semibold block mb-1 tracking-widest uppercase" style="color: var(--text-tertiary); letter-spacing: 0.08em;">状态</label>
+                    <CustomSelect
+                      v-model="task.status"
+                      :options="statusOptions"
+                      @change="onStatusChange(si, ti, task)"
+                    />
+                  </div>
+                  <button @click="removeTask(si, ti)" class="premium-btn p-2 md:p-1.5 rounded-lg shrink-0 cursor-pointer transition-colors duration-200"
+                    :style="{
+                      color: 'var(--text-tertiary)',
+                      border: '1px solid var(--border-primary)',
+                    }"
+                    @mouseenter="($event.target as HTMLElement).style.color = 'var(--error)'; ($event.target as HTMLElement).style.borderColor = 'var(--error)'; ($event.target as HTMLElement).style.background = 'rgba(239,68,68,0.08)'"
+                    @mouseleave="($event.target as HTMLElement).style.color = 'var(--text-tertiary)'; ($event.target as HTMLElement).style.borderColor = 'var(--border-primary)'; ($event.target as HTMLElement).style.background = 'transparent'">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  </button>
                 </div>
               </div>
             </div>

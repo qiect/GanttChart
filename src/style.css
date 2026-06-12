@@ -219,51 +219,24 @@ kbd {
 }
 
 /* ── Date Input ── */
-.premium-input[type="date"],
-.date-input {
+.premium-input[type="date"] {
   position: relative;
 }
 
-.premium-input[type="date"]::-webkit-calendar-picker-indicator,
-.date-input::-webkit-calendar-picker-indicator {
+.premium-input[type="date"]::-webkit-calendar-picker-indicator {
   opacity: 0.5;
   cursor: pointer;
   filter: var(--date-icon-filter, none);
   transition: opacity var(--transition-fast);
 }
 
-.premium-input[type="date"]::-webkit-calendar-picker-indicator:hover,
-.date-input::-webkit-calendar-picker-indicator:hover {
+.premium-input[type="date"]::-webkit-calendar-picker-indicator:hover {
   opacity: 1;
 }
 
-[data-theme="dark"] .premium-input[type="date"]::-webkit-calendar-picker-indicator,
-[data-theme="dark"] .date-input::-webkit-calendar-picker-indicator {
+[data-theme="dark"] .premium-input[type="date"]::-webkit-calendar-picker-indicator {
   filter: invert(1);
   --date-icon-filter: invert(1);
-}
-
-/* Date input with calendar icon */
-.date-input-wrap .date-input-icon {
-  transition: color var(--transition-fast);
-}
-
-.date-input-wrap:focus-within .date-input-icon {
-  color: var(--accent) !important;
-}
-
-.date-input-wrap .date-input {
-  padding-left: 2rem;
-}
-
-/* Hide default date icon when using custom icon */
-.date-input::-webkit-calendar-picker-indicator {
-  opacity: 0.4;
-  position: relative;
-}
-
-.date-input:focus::-webkit-calendar-picker-indicator {
-  opacity: 0.7;
 }
 
 /* ── Premium Select (legacy, kept for compatibility) ── */
