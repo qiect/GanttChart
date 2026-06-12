@@ -114,7 +114,7 @@ body {
 }
 
 /* ── Mobile Touch Optimization ── */
-@media (max-width: 767px) {
+@media (max-width: 1023px) {
   ::-webkit-scrollbar {
     width: 3px;
     height: 3px;
@@ -122,6 +122,34 @@ body {
 
   input, select, textarea {
     font-size: 16px !important;
+  }
+
+  /* Safe area support for notch devices */
+  body {
+    padding-left: env(safe-area-inset-left);
+    padding-right: env(safe-area-inset-right);
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+
+  /* Larger touch targets for interactive elements */
+  button, a, [role="button"] {
+    min-height: 32px;
+    min-width: 32px;
+  }
+
+  /* Prevent text selection on interactive elements */
+  .section-header, .premium-btn {
+    -webkit-user-select: none;
+    user-select: none;
+  }
+}
+
+/* ── Phone-specific: extra compact adjustments ── */
+@media (max-width: 767px) {
+  /* Even smaller scrollbars on phones */
+  ::-webkit-scrollbar {
+    width: 2px;
+    height: 2px;
   }
 }
 
