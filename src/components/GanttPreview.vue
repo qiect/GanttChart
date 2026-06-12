@@ -325,7 +325,7 @@ const postProcessSvg = () => {
 
     // Try to find the matching rect by y-position proximity
     let matchedRect: { x: number; y: number; width: number; height: number; el: SVGRectElement } | null = null
-    for (const [key, rectInfo] of rectMap) {
+    for (const [, rectInfo] of rectMap) {
       if (Math.abs(rectInfo.y - textY) < rectInfo.height) {
         matchedRect = rectInfo
         break
