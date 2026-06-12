@@ -319,8 +319,8 @@ const postProcessSvg = () => {
         // Only reposition if text is currently inside the bar
         if (currentX >= matchedRect.x && currentX <= barRight) {
           textEl.setAttribute('x', String(barRight + TEXT_OFFSET_RIGHT))
-          // Change text color for outside-bar text to ensure readability
-          textEl.style.fill = 'var(--text-secondary, #555)'
+          // Use CSS variable so it adapts to site light/dark theme
+          textEl.style.fill = 'var(--text-secondary, #5c6170)'
           textEl.style.fontSize = '11px'
           textEl.style.fontWeight = '500'
         }
@@ -375,6 +375,31 @@ watch(svg, (newSvg) => {
 
 .gantt-svg-container :deep(svg .taskText) {
   overflow: visible !important;
+}
+
+/* ── Force all SVG text to use CSS variable colors so it adapts to site theme ── */
+.gantt-svg-container :deep(svg .tick text),
+.gantt-svg-container :deep(svg .axis text),
+.gantt-svg-container :deep(svg .sectionTitle),
+.gantt-svg-container :deep(svg .taskTextOutside),
+.gantt-svg-container :deep(svg text:not(.taskText)) {
+  fill: var(--text-secondary, #5c6170) !important;
+}
+
+/* Task text inside bars: keep theme-provided color or force dark on light bg */
+.gantt-svg-container :deep(svg .taskText) {
+  fill: var(--text-primary, #1a1d26) !important;
+}
+
+/* Section titles slightly bolder */
+.gantt-svg-container :deep(svg .sectionTitle) {
+  fill: var(--text-primary, #1a1d26) !important;
+  font-weight: 600 !important;
+}
+
+/* Grid lines softer */
+.gantt-svg-container :deep(svg .grid .tick line) {
+  stroke: var(--border-primary, #e4e7ee) !important;
 }
 
 /* Hover highlight for task groups */
