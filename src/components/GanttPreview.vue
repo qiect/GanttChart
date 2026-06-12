@@ -252,12 +252,10 @@ const onRangeInput = (e: Event) => {
 
 // Scroll to zoom: mouse wheel zooms in/out centered on cursor
 const onWheel = (e: WheelEvent) => {
-  if (e.ctrlKey || e.metaKey) {
-    e.preventDefault()
-    const delta = e.deltaY > 0 ? -0.08 : 0.08
-    zoom.value = Math.max(0.3, Math.min(3, Math.round((zoom.value + delta) * 100) / 100))
-    flashZoomIndicator()
-  }
+  e.preventDefault()
+  const delta = e.deltaY > 0 ? -0.08 : 0.08
+  zoom.value = Math.max(0.3, Math.min(3, Math.round((zoom.value + delta) * 100) / 100))
+  flashZoomIndicator()
 }
 
 const render = async () => {
