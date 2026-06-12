@@ -78,7 +78,7 @@
         </div>
       </div>
       <!-- 预览 Tab -->
-      <div v-show="mobileTab === 'preview'" class="h-full">
+      <div v-show="mobileTab === 'preview'" ref="previewContainerRef" class="h-full">
         <GanttPreview
           :code="debouncedCode"
           :theme="theme"
@@ -156,14 +156,12 @@ onUnmounted(() => {
   window.removeEventListener('resize', checkMobile)
 })
 
-// Get chart element for export - search more broadly
+// Get chart element for export - find the SVG wrapper inside GanttPreview
 const chartElement = computed(() => {
   if (!previewContainerRef.value) return null
-  const svgParent = previewContainerRef.value.querySelector('.flex.justify-center')
+  const svgWrapper = previewContainerRef.value.querySelector('.gantt-svg-wrapper')
     || previewContainerRef.value.querySelector('svg')?.parentElement
-    || previewContainerRef.value.querySelector('[class*="mermaid"]')
-    || previewContainerRef.value.querySelector('.overflow-auto')
-  return svgParent as HTMLElement || null
+  return svgWrapper as HTMLElement || null
 })
 
 const handleCodeChange = (newCode: string) => {
