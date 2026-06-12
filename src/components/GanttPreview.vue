@@ -239,6 +239,7 @@ const render = async () => {
   if (!props.code.trim()) {
     svg.value = ''
     error.value = ''
+    hasError.value = false
     emit('errorChange', false)
     return
   }
@@ -246,6 +247,13 @@ const render = async () => {
   if (rendering) return
   rendering = true
   const id = `mermaid-gantt-${++renderCounter}`
+
+  // Clean up any leftover mermaid render elements from previous failed renders
+  document.querySelectorAll('[id^="mermaid-gantt-"]').forEach(el => {
+    if (el.id !== id) el.remove()
+  })
+  // Also remove any d3-registered elements that mermaid may have left behind
+  document.querySelectorAll('.d3-tip, .mermaidTooltip').forEach(el => el.remove())
 
   try {
     mermaid.initialize(getMermaidConfig(props.chartTheme))
@@ -259,8 +267,12 @@ const render = async () => {
     error.value = errorMessage
     hasError.value = true
     emit('errorChange', true)
+    // Clean up the error element that mermaid creates
     const errorEl = document.getElementById(id)
     if (errorEl) errorEl.remove()
+    // Also check for elements with d3- prefix that mermaid may create on error
+    const d3ErrorEl = document.getElementById(`d3-${id}`)
+    if (d3ErrorEl) d3ErrorEl.remove()
   } finally {
     rendering = false
   }

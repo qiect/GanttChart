@@ -89,16 +89,16 @@ export function generateMermaidGantt(sections, title = '项目计划', dateForma
             else if (task.startDate) {
                 startRef = task.startDate;
             }
-            // Milestone: duration is always 0d
-            const duration = task.status === 'milestone' ? '0d' : task.duration;
+            // Milestone: duration is always 0 with the task's current unit
+            const milestoneDuration = task.status === 'milestone' ? task.duration.replace(/^\d+/, '0') : task.duration;
             // Ensure we always have valid parts
             if (startRef) {
-                lines.push(`    ${task.name}           :${statusPrefix}${task.id}, ${startRef}, ${duration}`);
+                lines.push(`    ${task.name}           :${statusPrefix}${task.id}, ${startRef}, ${milestoneDuration}`);
             }
             else {
                 // No start date or dependency - use today as fallback
                 const today = new Date().toISOString().split('T')[0];
-                lines.push(`    ${task.name}           :${statusPrefix}${task.id}, ${today}, ${duration}`);
+                lines.push(`    ${task.name}           :${statusPrefix}${task.id}, ${today}, ${milestoneDuration}`);
             }
         }
         lines.push('');
