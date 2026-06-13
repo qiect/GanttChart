@@ -65,7 +65,7 @@ import { exportChart, exportMermaidCode } from '../utils/exportChart'
 import type { ExportOptions } from '../types'
 
 const props = defineProps<{
-  chartElement: HTMLElement | null
+  getChartElement: () => HTMLElement | null
   theme: 'light' | 'dark'
   code: string
 }>()
@@ -89,11 +89,12 @@ const handleExportCode = () => {
 }
 
 const handleExport = async (format: ExportOptions['format']) => {
-  if (!props.chartElement || isExporting.value) return
+  const chartElement = props.getChartElement()
+  if (!chartElement || isExporting.value) return
   isExporting.value = true
   isOpen.value = false
   try {
-    await exportChart(props.chartElement, {
+    await exportChart(chartElement, {
       format,
       quality: 1,
       scale: 2,

@@ -3,7 +3,7 @@
     <Toolbar
       :code="code"
       :theme="theme"
-      :chart-element="chartElement"
+      :get-chart-element="getChartElement"
       :editor-mode="editorMode"
       :mobile-tab="mobileTab"
       @code-change="handleCodeChange"
@@ -112,10 +112,10 @@ import StatusBar from './components/StatusBar.vue'
 import TemplateModal from './components/TemplateModal.vue'
 import Toast from './components/Toast.vue'
 import { useLocalStorage } from './composables/useLocalStorage'
-import { ganttTemplates } from './utils/mermaidTemplates'
+import { ganttTemplates, blankTemplate } from './utils/mermaidTemplates'
 import type { GanttTemplate, ChartThemeId } from './types'
 
-const DEFAULT_CODE = ganttTemplates[0].code
+const DEFAULT_CODE = blankTemplate.code
 
 const [code, setCode] = useLocalStorage('gantt-studio-code', DEFAULT_CODE)
 const [theme, setTheme] = useLocalStorage<'light' | 'dark'>('gantt-studio-theme', 'light')
@@ -156,13 +156,13 @@ onUnmounted(() => {
   window.removeEventListener('resize', checkMobile)
 })
 
-// Get chart element for export - find the SVG wrapper inside GanttPreview
-const chartElement = computed(() => {
+// Get chart element for export - find the SVG wrapper inside GanttPreview at export time
+const getChartElement = () => {
   if (!previewContainerRef.value) return null
-  const svgWrapper = previewContainerRef.value.querySelector('.gantt-svg-wrapper')
-    || previewContainerRef.value.querySelector('svg')?.parentElement
-  return svgWrapper as HTMLElement || null
-})
+  return previewContainerRef.value.querySelector('.gantt-svg-wrapper') as HTMLElement
+    || previewContainerRef.value.querySelector('svg')?.parentElement as HTMLElement
+    || null
+}
 
 const handleCodeChange = (newCode: string) => {
   setCode(newCode)

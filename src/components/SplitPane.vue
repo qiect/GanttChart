@@ -12,7 +12,7 @@
   >
     <!-- 左侧/上方面板 -->
     <div
-      :style="isMobile ? { height: `${ratio * 100}%` } : { width: `${ratio * 100}%` }"
+      :style="isMobile ? { height: `${ratio * 100}%` } : { width: `${ratio * 100}%`, minWidth: `${minLeftWidth}px` }"
       class="overflow-hidden"
       :class="isMobile ? '' : 'h-full'"
     >
