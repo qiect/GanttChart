@@ -78,7 +78,6 @@ const props = defineProps<{
 
 const isOpen = ref(false)
 const isExporting = ref(false)
-const menuRef = ref<HTMLDivElement | null>(null)
 let closeTimer: ReturnType<typeof setTimeout> | null = null
 
 const openMenu = () => {

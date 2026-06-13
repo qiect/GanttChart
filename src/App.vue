@@ -104,7 +104,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch, onMounted, onUnmounted } from 'vue'
+import { ref, watch, onMounted, onUnmounted } from 'vue'
 import SplitPane from './components/SplitPane.vue'
 import MermaidEditor from './components/MermaidEditor.vue'
 import VisualEditor from './components/VisualEditor.vue'
@@ -114,7 +114,7 @@ import StatusBar from './components/StatusBar.vue'
 import TemplateModal from './components/TemplateModal.vue'
 import Toast from './components/Toast.vue'
 import { useLocalStorage } from './composables/useLocalStorage'
-import { ganttTemplates, blankTemplate } from './utils/mermaidTemplates'
+import { blankTemplate } from './utils/mermaidTemplates'
 import type { GanttTemplate, ChartThemeId } from './types'
 
 const DEFAULT_CODE = blankTemplate.code
