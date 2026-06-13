@@ -83,7 +83,7 @@ const props = withDefaults(defineProps<{
   minRightWidth?: number
 }>(), {
   defaultRatio: 0.3,
-  minLeftWidth: 280,
+  minLeftWidth: 360,
   minRightWidth: 300,
 })
 

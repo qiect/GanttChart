@@ -438,6 +438,8 @@ watch(svg, (newSvg) => {
     })
   }
 })
+
+defineExpose({ containerRef })
 </script>
 
 <style scoped>

@@ -47,8 +47,9 @@
           </div>
         </template>
         <template #right>
-          <div ref="previewContainerRef" class="h-full">
+          <div class="h-full">
             <GanttPreview
+              ref="ganttPreviewRef"
               :code="debouncedCode"
               :theme="theme"
               :chart-theme="chartTheme"
@@ -78,8 +79,9 @@
         </div>
       </div>
       <!-- 预览 Tab -->
-      <div v-show="mobileTab === 'preview'" ref="previewContainerRef" class="h-full">
+      <div v-show="mobileTab === 'preview'" class="h-full">
         <GanttPreview
+          ref="ganttPreviewRefMobile"
           :code="debouncedCode"
           :theme="theme"
           :chart-theme="chartTheme"
@@ -126,7 +128,8 @@ const [chartTheme, setChartTheme] = useLocalStorage<ChartThemeId>('gantt-studio-
 const isTemplateOpen = ref(false)
 const hasError = ref(false)
 const showSaveToast = ref(false)
-const previewContainerRef = ref<HTMLElement | null>(null)
+const ganttPreviewRef = ref<InstanceType<typeof GanttPreview> | null>(null)
+const ganttPreviewRefMobile = ref<InstanceType<typeof GanttPreview> | null>(null)
 const isMobile = ref(false)
 const isPhone = ref(false)
 const mobileTab = ref<'editor' | 'preview'>('editor')
@@ -156,12 +159,10 @@ onUnmounted(() => {
   window.removeEventListener('resize', checkMobile)
 })
 
-// Get chart element for export - find the SVG wrapper inside GanttPreview at export time
+// Get chart element for export - use GanttPreview's exposed containerRef directly
 const getChartElement = () => {
-  if (!previewContainerRef.value) return null
-  return previewContainerRef.value.querySelector('.gantt-svg-wrapper') as HTMLElement
-    || previewContainerRef.value.querySelector('svg')?.parentElement as HTMLElement
-    || null
+  const preview = isMobile.value ? ganttPreviewRefMobile.value : ganttPreviewRef.value
+  return preview?.containerRef ?? null
 }
 
 const handleCodeChange = (newCode: string) => {
