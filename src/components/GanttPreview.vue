@@ -485,15 +485,6 @@ watch(svg, (newSvg) => {
   fill: var(--text-secondary, #5c6170) !important;
 }
 
-.gantt-svg-wrapper :deep(svg .taskText) {
-  fill: #ffffff !important;
-  font-weight: 500 !important;
-  paint-order: stroke fill;
-  stroke: rgba(0, 0, 0, 0.15) !important;
-  stroke-width: 2px !important;
-  stroke-linejoin: round !important;
-}
-
 .gantt-svg-wrapper :deep(svg .sectionTitle) {
   fill: var(--text-primary, #1a1d26) !important;
   font-weight: 600 !important;
