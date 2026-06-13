@@ -12,7 +12,7 @@
   >
     <!-- 左侧/上方面板 -->
     <div
-      :style="isMobile ? { height: `${ratio * 100}%` } : { width: `${ratio * 100}%` }"
+      :style="isMobile ? { height: `${ratio * 100}%` } : { width: `${ratio * 100}%`, minWidth: `${minLeftWidth}px` }"
       class="overflow-hidden"
       :class="isMobile ? '' : 'h-full'"
     >
@@ -83,7 +83,7 @@ const props = withDefaults(defineProps<{
   minRightWidth?: number
 }>(), {
   defaultRatio: 0.3,
-  minLeftWidth: 280,
+  minLeftWidth: 360,
   minRightWidth: 300,
 })
 

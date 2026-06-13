@@ -123,6 +123,30 @@
               <span class="text-sm font-bold" :style="{ color: activeCategoryInfo.color }">{{ activeCategoryInfo.name }}</span>
               <span class="text-[10px] px-1.5 py-0.5 rounded-full font-mono" :style="{ background: activeCategoryInfo.color + '12', color: activeCategoryInfo.color }">{{ filteredTemplates.length }}</span>
             </div>
+            <!-- Blank template card -->
+            <button
+              class="tmpl-card text-left p-3 sm:p-4 rounded-xl transition-all duration-200 group cursor-pointer relative overflow-hidden mb-2.5 sm:mb-3"
+              :style="{
+                border: '1px dashed var(--border-primary)',
+                background: 'var(--bg-secondary)',
+              }"
+              @click="$emit('select', blankTemplate); $emit('close')"
+              @mouseenter="onBlankEnter"
+              @mouseleave="onBlankLeave"
+            >
+              <div class="flex items-center gap-3">
+                <div class="w-9 h-9 rounded-lg flex items-center justify-center shrink-0"
+                  :style="{ background: 'var(--bg-tertiary)', border: '1px solid var(--border-secondary)' }">
+                  <svg class="w-4.5 h-4.5" style="color: var(--text-tertiary);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M12 4v16m8-8H4" />
+                  </svg>
+                </div>
+                <div class="min-w-0">
+                  <h3 class="font-semibold text-sm" style="color: var(--text-primary);">空白模板</h3>
+                  <p class="text-xs mt-0.5" style="color: var(--text-tertiary);">从零开始创建甘特图</p>
+                </div>
+              </div>
+            </button>
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 sm:gap-3">
               <button
                 v-for="template in filteredTemplates"
@@ -211,7 +235,7 @@
 
 <script setup lang="ts">
 import { ref, computed } from 'vue'
-import { ganttTemplates, templateCategories } from '../utils/mermaidTemplates'
+import { ganttTemplates, templateCategories, blankTemplate } from '../utils/mermaidTemplates'
 import type { GanttTemplate, TemplateCategory } from '../types'
 import CatIcon from './CatIcon.vue'
 
@@ -267,6 +291,20 @@ const onCardEnter = (e: MouseEvent) => {
 const onCardLeave = (e: MouseEvent) => {
   const el = e.currentTarget as HTMLElement
   el.style.borderColor = 'var(--border-primary)'
+  el.style.boxShadow = 'none'
+}
+
+const onBlankEnter = (e: MouseEvent) => {
+  const el = e.currentTarget as HTMLElement
+  el.style.borderColor = 'var(--accent)'
+  el.style.borderStyle = 'solid'
+  el.style.boxShadow = '0 2px 12px rgba(0,0,0,0.06), 0 0 0 1px var(--accent-glow)'
+}
+
+const onBlankLeave = (e: MouseEvent) => {
+  const el = e.currentTarget as HTMLElement
+  el.style.borderColor = 'var(--border-primary)'
+  el.style.borderStyle = 'dashed'
   el.style.boxShadow = 'none'
 }
 </script>

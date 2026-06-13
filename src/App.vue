@@ -3,7 +3,7 @@
     <Toolbar
       :code="code"
       :theme="theme"
-      :chart-element="chartElement"
+      :get-chart-element="getChartElement"
       :editor-mode="editorMode"
       :mobile-tab="mobileTab"
       @code-change="handleCodeChange"
@@ -47,8 +47,9 @@
           </div>
         </template>
         <template #right>
-          <div ref="previewContainerRef" class="h-full">
+          <div class="h-full">
             <GanttPreview
+              ref="ganttPreviewRef"
               :code="debouncedCode"
               :theme="theme"
               :chart-theme="chartTheme"
@@ -78,8 +79,9 @@
         </div>
       </div>
       <!-- 预览 Tab -->
-      <div v-show="mobileTab === 'preview'" ref="previewContainerRef" class="h-full">
+      <div v-show="mobileTab === 'preview'" class="h-full">
         <GanttPreview
+          ref="ganttPreviewRefMobile"
           :code="debouncedCode"
           :theme="theme"
           :chart-theme="chartTheme"
@@ -112,10 +114,10 @@ import StatusBar from './components/StatusBar.vue'
 import TemplateModal from './components/TemplateModal.vue'
 import Toast from './components/Toast.vue'
 import { useLocalStorage } from './composables/useLocalStorage'
-import { ganttTemplates } from './utils/mermaidTemplates'
+import { ganttTemplates, blankTemplate } from './utils/mermaidTemplates'
 import type { GanttTemplate, ChartThemeId } from './types'
 
-const DEFAULT_CODE = ganttTemplates[0].code
+const DEFAULT_CODE = blankTemplate.code
 
 const [code, setCode] = useLocalStorage('gantt-studio-code', DEFAULT_CODE)
 const [theme, setTheme] = useLocalStorage<'light' | 'dark'>('gantt-studio-theme', 'light')
@@ -126,7 +128,8 @@ const [chartTheme, setChartTheme] = useLocalStorage<ChartThemeId>('gantt-studio-
 const isTemplateOpen = ref(false)
 const hasError = ref(false)
 const showSaveToast = ref(false)
-const previewContainerRef = ref<HTMLElement | null>(null)
+const ganttPreviewRef = ref<InstanceType<typeof GanttPreview> | null>(null)
+const ganttPreviewRefMobile = ref<InstanceType<typeof GanttPreview> | null>(null)
 const isMobile = ref(false)
 const isPhone = ref(false)
 const mobileTab = ref<'editor' | 'preview'>('editor')
@@ -156,13 +159,17 @@ onUnmounted(() => {
   window.removeEventListener('resize', checkMobile)
 })
 
-// Get chart element for export - find the SVG wrapper inside GanttPreview
-const chartElement = computed(() => {
-  if (!previewContainerRef.value) return null
-  const svgWrapper = previewContainerRef.value.querySelector('.gantt-svg-wrapper')
-    || previewContainerRef.value.querySelector('svg')?.parentElement
-  return svgWrapper as HTMLElement || null
-})
+// Get chart element for export - use GanttPreview's exposed containerRef directly
+const getChartElement = () => {
+  const preview = isMobile.value ? ganttPreviewRefMobile.value : ganttPreviewRef.value
+  if (!preview) return null
+  // containerRef is exposed via defineExpose, may be auto-unwrapped or still a Ref
+  const el = preview.containerRef
+  if (el instanceof HTMLElement) return el
+  // Handle case where it's still a Vue Ref
+  if (el && typeof el === 'object' && 'value' in el) return (el as { value: HTMLElement | null }).value
+  return null
+}
 
 const handleCodeChange = (newCode: string) => {
   setCode(newCode)

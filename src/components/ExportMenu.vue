@@ -1,19 +1,25 @@
 <template>
-  <div class="relative" ref="menuRef">
+  <div class="relative" ref="menuRef"
+    @mouseenter="openMenu"
+    @mouseleave="scheduleClose">
     <button
       class="premium-btn px-2 md:px-3 py-1.5 text-sm rounded-lg flex items-center gap-1 md:gap-1.5 disabled:opacity-50 cursor-pointer font-medium"
       :style="{ color: 'var(--text-secondary)' }"
-      @click="isOpen = !isOpen"
       :disabled="isExporting"
-      @mouseenter="!isOpen && (($event.target as HTMLElement).style.background = 'var(--bg-tertiary)')"
-      @mouseleave="(($event.target as HTMLElement).style.background = 'transparent')"
+      @mouseenter="($event.currentTarget as HTMLElement).style.background = 'var(--bg-tertiary)'"
+      @mouseleave="($event.currentTarget as HTMLElement).style.background = 'transparent'"
     >
       <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
       </svg>
       <span class="hidden sm:inline">{{ isExporting ? '导出中...' : '导出' }}</span>
+      <svg class="w-3 h-3 transition-transform duration-200" :class="isOpen ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+      </svg>
     </button>
-    <div v-if="isOpen" class="absolute right-0 top-full mt-2 z-50 min-w-[160px] md:min-w-[180px] overflow-hidden animate-fade-in"
+    <div v-if="isOpen" class="absolute right-0 top-full pt-1 z-50 min-w-[160px] md:min-w-[180px] overflow-hidden animate-fade-in"
+      @mouseenter="cancelClose"
+      @mouseleave="scheduleClose"
       :style="{
         background: 'var(--bg-elevated)',
         border: '1px solid var(--border-primary)',
@@ -24,8 +30,8 @@
         <button class="w-full text-left px-4 py-2.5 text-sm cursor-pointer transition-colors duration-150 font-medium"
           :style="{ color: 'var(--text-primary)' }"
           @click="handleExportCode"
-          @mouseenter="($event.target as HTMLElement).style.background = 'var(--accent-subtle)'; ($event.target as HTMLElement).style.color = 'var(--accent)'"
-          @mouseleave="($event.target as HTMLElement).style.background = 'transparent'; ($event.target as HTMLElement).style.color = 'var(--text-primary)'"
+          @mouseenter="($event.currentTarget as HTMLElement).style.background = 'var(--accent-subtle)'; ($event.currentTarget as HTMLElement).style.color = 'var(--accent)'"
+          @mouseleave="($event.currentTarget as HTMLElement).style.background = 'transparent'; ($event.currentTarget as HTMLElement).style.color = 'var(--text-primary)'"
         >
           导出 Mermaid 代码
         </button>
@@ -33,24 +39,24 @@
         <button class="w-full text-left px-4 py-2.5 text-sm cursor-pointer transition-colors duration-150 font-medium"
           :style="{ color: 'var(--text-primary)' }"
           @click="handleExport('png')"
-          @mouseenter="($event.target as HTMLElement).style.background = 'var(--accent-subtle)'; ($event.target as HTMLElement).style.color = 'var(--accent)'"
-          @mouseleave="($event.target as HTMLElement).style.background = 'transparent'; ($event.target as HTMLElement).style.color = 'var(--text-primary)'"
+          @mouseenter="($event.currentTarget as HTMLElement).style.background = 'var(--accent-subtle)'; ($event.currentTarget as HTMLElement).style.color = 'var(--accent)'"
+          @mouseleave="($event.currentTarget as HTMLElement).style.background = 'transparent'; ($event.currentTarget as HTMLElement).style.color = 'var(--text-primary)'"
         >
           导出 PNG
         </button>
         <button class="w-full text-left px-4 py-2.5 text-sm cursor-pointer transition-colors duration-150 font-medium"
           :style="{ color: 'var(--text-primary)' }"
           @click="handleExport('svg')"
-          @mouseenter="($event.target as HTMLElement).style.background = 'var(--accent-subtle)'; ($event.target as HTMLElement).style.color = 'var(--accent)'"
-          @mouseleave="($event.target as HTMLElement).style.background = 'transparent'; ($event.target as HTMLElement).style.color = 'var(--text-primary)'"
+          @mouseenter="($event.currentTarget as HTMLElement).style.background = 'var(--accent-subtle)'; ($event.currentTarget as HTMLElement).style.color = 'var(--accent)'"
+          @mouseleave="($event.currentTarget as HTMLElement).style.background = 'transparent'; ($event.currentTarget as HTMLElement).style.color = 'var(--text-primary)'"
         >
           导出 SVG
         </button>
         <button class="w-full text-left px-4 py-2.5 text-sm cursor-pointer transition-colors duration-150 font-medium"
           :style="{ color: 'var(--text-primary)' }"
           @click="handleExport('pdf')"
-          @mouseenter="($event.target as HTMLElement).style.background = 'var(--accent-subtle)'; ($event.target as HTMLElement).style.color = 'var(--accent)'"
-          @mouseleave="($event.target as HTMLElement).style.background = 'transparent'; ($event.target as HTMLElement).style.color = 'var(--text-primary)'"
+          @mouseenter="($event.currentTarget as HTMLElement).style.background = 'var(--accent-subtle)'; ($event.currentTarget as HTMLElement).style.color = 'var(--accent)'"
+          @mouseleave="($event.currentTarget as HTMLElement).style.background = 'transparent'; ($event.currentTarget as HTMLElement).style.color = 'var(--text-primary)'"
         >
           导出 PDF
         </button>
@@ -60,12 +66,12 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted } from 'vue'
+import { ref, onUnmounted } from 'vue'
 import { exportChart, exportMermaidCode } from '../utils/exportChart'
 import type { ExportOptions } from '../types'
 
 const props = defineProps<{
-  chartElement: HTMLElement | null
+  getChartElement: () => HTMLElement | null
   theme: 'light' | 'dark'
   code: string
 }>()
@@ -73,15 +79,29 @@ const props = defineProps<{
 const isOpen = ref(false)
 const isExporting = ref(false)
 const menuRef = ref<HTMLDivElement | null>(null)
+let closeTimer: ReturnType<typeof setTimeout> | null = null
 
-const handleClickOutside = (e: MouseEvent) => {
-  if (menuRef.value && !menuRef.value.contains(e.target as Node)) {
+const openMenu = () => {
+  cancelClose()
+  isOpen.value = true
+}
+
+const scheduleClose = () => {
+  closeTimer = setTimeout(() => {
     isOpen.value = false
+  }, 150)
+}
+
+const cancelClose = () => {
+  if (closeTimer) {
+    clearTimeout(closeTimer)
+    closeTimer = null
   }
 }
 
-onMounted(() => document.addEventListener('mousedown', handleClickOutside))
-onUnmounted(() => document.removeEventListener('mousedown', handleClickOutside))
+onUnmounted(() => {
+  if (closeTimer) clearTimeout(closeTimer)
+})
 
 const handleExportCode = () => {
   isOpen.value = false
@@ -89,11 +109,17 @@ const handleExportCode = () => {
 }
 
 const handleExport = async (format: ExportOptions['format']) => {
-  if (!props.chartElement || isExporting.value) return
+  if (isExporting.value) return
+  const chartElement = props.getChartElement()
+  if (!chartElement) {
+    console.warn('Export: chart element not found')
+    isOpen.value = false
+    return
+  }
   isExporting.value = true
   isOpen.value = false
   try {
-    await exportChart(props.chartElement, {
+    await exportChart(chartElement, {
       format,
       quality: 1,
       scale: 2,

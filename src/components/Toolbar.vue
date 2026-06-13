@@ -1,5 +1,5 @@
 <template>
-  <div class="flex items-center justify-between px-3 lg:px-5 border-b"
+  <div class="flex items-center justify-between px-3 lg:px-5 border-b relative z-50"
     :style="{
       height: isMobile ? 'auto' : '48px',
       background: theme === 'dark' ? 'var(--glass-bg)' : 'var(--glass-bg)',
@@ -130,7 +130,7 @@
         </div>
 
         <!-- 导出组 -->
-        <ExportMenu :chart-element="chartElement" :theme="theme" :code="code" />
+        <ExportMenu :get-chart-element="getChartElement" :theme="theme" :code="code" />
 
         <!-- 主题切换 -->
         <button
@@ -201,7 +201,7 @@
               </svg>
               <span class="hidden md:inline text-xs font-medium">保存</span>
             </button>
-            <ExportMenu :chart-element="chartElement" :theme="theme" :code="code" />
+            <ExportMenu :get-chart-element="getChartElement" :theme="theme" :code="code" />
             <button class="premium-btn p-2 md:px-3 md:py-1.5 rounded-lg cursor-pointer flex items-center gap-1.5"
               :style="{ color: 'var(--text-secondary)' }"
               @click="$emit('themeChange', theme === 'dark' ? 'light' : 'dark')" title="切换主题">
@@ -302,7 +302,7 @@ import { importMermaidCode } from '../utils/exportChart'
 const props = defineProps<{
   code: string
   theme: 'light' | 'dark'
-  chartElement: HTMLElement | null
+  getChartElement: () => HTMLElement | null
   editorMode: 'code' | 'visual'
   mobileTab: 'editor' | 'preview'
 }>()
