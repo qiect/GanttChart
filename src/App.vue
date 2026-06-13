@@ -162,7 +162,13 @@ onUnmounted(() => {
 // Get chart element for export - use GanttPreview's exposed containerRef directly
 const getChartElement = () => {
   const preview = isMobile.value ? ganttPreviewRefMobile.value : ganttPreviewRef.value
-  return preview?.containerRef ?? null
+  if (!preview) return null
+  // containerRef is exposed via defineExpose, may be auto-unwrapped or still a Ref
+  const el = preview.containerRef
+  if (el instanceof HTMLElement) return el
+  // Handle case where it's still a Vue Ref
+  if (el && typeof el === 'object' && 'value' in el) return (el as { value: HTMLElement | null }).value
+  return null
 }
 
 const handleCodeChange = (newCode: string) => {
