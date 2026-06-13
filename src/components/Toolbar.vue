@@ -1,5 +1,5 @@
 <template>
-  <div class="flex items-center justify-between px-3 lg:px-5 border-b"
+  <div class="flex items-center justify-between px-3 lg:px-5 border-b relative z-50"
     :style="{
       height: isMobile ? 'auto' : '48px',
       background: theme === 'dark' ? 'var(--glass-bg)' : 'var(--glass-bg)',
